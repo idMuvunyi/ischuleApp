@@ -13,6 +13,7 @@ import ProfileScreen from './ProfileScreen'
 const Tab = createBottomTabNavigator()
 
 const BottomNavigator = ({route, navigation}) => {
+    const { role } = route.params 
     return (
        <Tab.Navigator
        screenOptions={{
@@ -24,7 +25,8 @@ const BottomNavigator = ({route, navigation}) => {
            },
        }}
        >
-     <Tab.Screen name="HomeScreen" component={HomeScreen}
+     <Tab.Screen name="HomeScreen" 
+     children={() => <HomeScreen user={role} />}
            options={{
                tabBarIcon:() => (
                    <Icon name="home" color={COLORS.white} size={28} />
