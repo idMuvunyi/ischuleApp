@@ -26,7 +26,7 @@ const BottomNavigator = ({route, navigation}) => {
        }}
        >
      <Tab.Screen name="HomeScreen" 
-     children={() => <HomeScreen user={role} />}
+     children={() => <HomeScreen user={role} navigation={navigation}/>}
            options={{
                tabBarIcon:() => (
                    <Icon name="home" color={COLORS.white} size={28} />

@@ -8,6 +8,7 @@ import LoginScreen from './src/components/LoginScreen'
 import TutorSignUpScreen from './src/components/TutorSignUpScreen'
 import ForgotPassword from './src/components/ForgotPassword'
 import BottomNavigator from './src/components/BottomNavigator'
+import TutorDetailsScreen from './src/components/TutorDetailsScreen'
 
 const Stack = createNativeStackNavigator()
 export default function App() {
@@ -20,6 +21,20 @@ export default function App() {
        <Stack.Screen name="TutorSignUpScreen" component={TutorSignUpScreen} />
        <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
        <Stack.Screen name="BottomNavigator" component={BottomNavigator} />
+       <Stack.Screen 
+       name="TutorDetailsScreen" 
+       component={TutorDetailsScreen} 
+       options={({route}) => ({
+          title:route.params.title,
+          headerShown:true,
+          headerTitle:false,
+          headerTransparent:true,
+          headerBackTitleVisible:false,
+          headerBackVisible:true,
+          headerTintColor:'#fff',
+          headerTitleAlign:'center'
+       })}
+       />
        </Stack.Navigator>
     </NavigationContainer>
   )

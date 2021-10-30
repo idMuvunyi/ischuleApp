@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Dimensions } from 'react-native'
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import COLORS from '../assets/colors'
+import { categories } from '../rawData/categories'
 
 
 const width = Dimensions.get("screen").width * (45 / 100)
@@ -15,33 +16,17 @@ const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(0)
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.container}
         >
-         <TouchableOpacity>
+        {categories.map((category, index) => (
+            <TouchableOpacity key={index} onPress={() => setSelectedCategoryIndex(index)}>
             <View style={{...styles.categoryBtn, 
-                backgroundColor: selectedCategoryIndex === 0 ? COLORS.primary : COLORS.success }}>
+                backgroundColor: selectedCategoryIndex === index ? COLORS.secondary : COLORS.textColor }}>
                 <View style={styles.categoryBtnBg}>
-                  <AntDesign name="solution1" color={COLORS.secondary} size={20}/>
+                  <AntDesign name={category.image} color={COLORS.secondary} size={20}/>
                 </View>
-                <Text style={{fontSize:15, fontWeight:'bold', marginLeft:10}}>All Tutors</Text>
+                <Text style={{fontSize:15, fontWeight:'bold', marginLeft:10}}>{category.name}</Text>
             </View>
         </TouchableOpacity>
-        <TouchableOpacity>
-        <View style={{...styles.categoryBtn, 
-                backgroundColor: selectedCategoryIndex === 1 ? COLORS.primary : COLORS.secondary }}>
-                <View style={styles.categoryBtnBg}>
-                  <AntDesign name="swap" color={COLORS.secondary} size={20}/>
-                </View>
-                <Text style={{fontSize:15, fontWeight:'bold', marginLeft:10}}>Nearby Tutors</Text>
-            </View>
-        </TouchableOpacity>
-        <TouchableOpacity>
-        <View style={{...styles.categoryBtn, 
-                backgroundColor: selectedCategoryIndex === 1 ? COLORS.primary : COLORS.secondary }}>
-                <View style={styles.categoryBtnBg}>
-                  <AntDesign name="star" color={COLORS.secondary} size={20}/>
-                </View>
-                <Text style={{fontSize:15, fontWeight:'bold', marginLeft:10}}>Most Rated</Text>
-            </View>
-        </TouchableOpacity>
+        ))}
         </ScrollView>
     )
 }
@@ -60,7 +45,7 @@ const styles = StyleSheet.create({
         height:45,
         width: width,
         marginRight:7,
-        borderRadius:10,
+        borderRadius:15,
         alignItems:'center',
         paddingHorizontal:5,
         flexDirection:'row'
