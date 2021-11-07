@@ -44,7 +44,7 @@ const HomeScreen = ({navigation, user}) => {
               </Text>
               { items.name === 'Muvunyi Idrissa' ?
               <View style={styles.tickBg}>
-                <Feather name="check" color={COLORS.white} size={15} />
+                <Feather name="check" color={COLORS.white} size={14} />
              </View>
              :
              null
@@ -163,8 +163,8 @@ const styles = StyleSheet.create({
       paddingRight:5
     },
     tickBg:{
-      paddingVertical:3,
-      paddingHorizontal:3,
+      paddingVertical:2,
+      paddingHorizontal:2,
       backgroundColor:'#B5CDA3',
       borderRadius:12,
       marginLeft:5,

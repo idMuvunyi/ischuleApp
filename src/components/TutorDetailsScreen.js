@@ -54,7 +54,7 @@ const TutorDetailsScreen = ({route, navigation}) => {
                <Text style={{...styles.textContent, flex:1, fontWeight:'bold'}}>Email</Text>
                <Text style={{...styles.textContent, flex:2, textAlign:'right'}}>muvunyiiddy@gmail.com</Text>
              </View>
-             <View style={styles.cardContent}>
+             <View style={{...styles.cardContent, borderBottomWidth:0}}>
                <Text style={{...styles.textContent,flex:1, fontWeight:'bold'}}>Address</Text>
                <Text style={{...styles.textContent, flex:2, textAlign:'right'}}>{location}</Text>
              </View>
@@ -79,7 +79,7 @@ const TutorDetailsScreen = ({route, navigation}) => {
                <Text style={{...styles.textContent, flex:2, textAlign:'right'}}>University of Tourism and Management Information systems</Text>
              
              </View>
-             <View style={styles.cardContent}>
+             <View style={{...styles.cardContent, borderBottomWidth:0}}>
                <Text style={{...styles.textContent, flex:1, fontWeight:'bold'}}>Graduated</Text>
                <Text style={{...styles.textContent, flex:2, textAlign:'right'}}>2019</Text>
              </View>
@@ -103,7 +103,7 @@ const TutorDetailsScreen = ({route, navigation}) => {
                <Text style={{...styles.textContent, flex:1, textAlign:'right'}}>RWF {salary}</Text>
              </View>
 
-             <View style={styles.cardContent}>
+             <View style={{...styles.cardContent, borderBottomWidth:0}}>
                <Text style={{...styles.textContent,flex:1, fontWeight:'bold'}}>Availability</Text>
                <Text style={{...styles.textContent, flex:2, textAlign:'right'}}>Mon - Friday | 4:30PM - 9:00PM</Text>
              </View>

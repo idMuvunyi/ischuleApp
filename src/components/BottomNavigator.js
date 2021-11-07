@@ -18,9 +18,9 @@ const BottomNavigator = ({route, navigation}) => {
        <Tab.Navigator
        screenOptions={{
            tabBarStyle:{
-              backgroundColor:COLORS.primary,
+              backgroundColor:COLORS.secondary,
               paddingVertical: 5,
-              height:Platform.OS === 'ios' ? 90 : 70,
+              height:Platform.OS === 'ios' ? 90 : 60,
               elevation:5,
            },
        }}
@@ -28,8 +28,8 @@ const BottomNavigator = ({route, navigation}) => {
      <Tab.Screen name="HomeScreen" 
      children={() => <HomeScreen user={role} navigation={navigation}/>}
            options={{
-               tabBarIcon:() => (
-                   <Icon name="home" color={COLORS.white} size={28} />
+               tabBarIcon:({focused}) => (
+                   <Icon name="home" color={focused ? COLORS.grey : COLORS.white} size={28} />
                ),
                tabBarLabel:"Home",
                tabBarLabelStyle:{color:COLORS.white, 
@@ -40,8 +40,8 @@ const BottomNavigator = ({route, navigation}) => {
      
      <Tab.Screen name="FeedScreen" component={FeedScreen}
            options={{
-               tabBarIcon:() => (
-                   <Icons name="newspaper-o" color={COLORS.white} size={26} />
+               tabBarIcon:({focused}) => (
+                   <Icons name="newspaper-o" color={focused ? COLORS.grey : COLORS.white} size={26} />
                ),
                tabBarLabel:"Feeds",
                tabBarLabelStyle:{color:COLORS.white, 
@@ -54,8 +54,8 @@ const BottomNavigator = ({route, navigation}) => {
            />
         <Tab.Screen name="MessagesScreen" component={MessagesScreen}
            options={{
-               tabBarIcon:() => (
-                   <Icon name="message1" color={COLORS.white} size={28} />
+               tabBarIcon:({focused}) => (
+                   <Icon name="message1" color={focused ? COLORS.grey : COLORS.white} size={28} />
                ),
                tabBarLabel:"Messages",
                tabBarLabelStyle:{color:COLORS.white, 
@@ -70,13 +70,18 @@ const BottomNavigator = ({route, navigation}) => {
     <Tab.Screen name="ProfileScreen" component={ProfileScreen}
            options={{
                tabBarIcon:({focused}) => (
-                <Icon name="contacts" color={focused ? COLORS.secondary : COLORS.white} size={28} />
+                <Icon name="contacts" color={focused ? COLORS.grey : COLORS.white} size={28} />
                ),
                tabBarLabel:"Profile",
                tabBarLabelStyle:{color:COLORS.white, 
-                fontSize:13, paddingBottom:Platform.OS === 'android' ? 8 : 0
+                fontSize:13, paddingBottom:Platform.OS === 'android' ? 8 : 0,
             },
-               headerShown:false,
+                headerShadowVisible:false,
+                headerTitle:"My Profile",
+                headerTitleAlign:'center',
+                headerTitleStyle:{fontSize:18, color:COLORS.grey},
+                headerTransparent:true
+              
            }}
            />
        </Tab.Navigator>
