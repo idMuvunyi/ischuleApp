@@ -7,17 +7,6 @@ import { tutors } from '../../rawData/tutors'
 
 const ProfessionalDetails = () => {
 
-    let index = 0;
-        const data = [
-            { key: index++, section: true, label: 'Fruits' },
-            { key: index++, label: 'Red Apples' },
-            { key: index++, label: 'Cherries' },
-            { key: index++, label: 'Cranberries', accessibilityLabel: 'Tap here for cranberries' },
-            // etc...
-            // Can also add additional custom keys which are passed to the onChange callback
-            { key: index++, label: 'Vegetable', customKey: 'Not a fruit' }
-        ];
-
         const addNewSubject = () => {
             alert('Item needs to be added')
         }
@@ -44,9 +33,14 @@ return(
                <Text style={{...styles.textContent, flex:1, textAlign:'right'}}>RWF 30-70K</Text>
              </View>
 
-             <View style={{...styles.cardContent, borderBottomWidth:0}}>
+             <View style={styles.cardContent}>
                <Text style={{...styles.textContent,flex:1, fontWeight:'bold'}}>Availability</Text>
                <Text style={{...styles.textContent, flex:2, textAlign:'right'}}>Mon - Friday | 4:30PM - 9:00PM</Text>
+             </View>
+
+             <View style={{...styles.cardContent, borderBottomWidth:0}}>
+               <Text style={{...styles.textContent,flex:1, fontWeight:'bold'}}>My Ratings</Text>
+               <Text style={{...styles.textContent, flex:2, textAlign:'right'}}>3.5</Text>
              </View>
              </View>
     </View>

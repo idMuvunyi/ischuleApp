@@ -4,9 +4,7 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
 import HomeScreen from './HomeScreen'
 import COLORS from '../assets/colors'
 import Icon from 'react-native-vector-icons/AntDesign'
-import Icons from 'react-native-vector-icons/FontAwesome'
 import MessagesScreen from './MessagesScreen'
-import FeedScreen from './FeedScreen'
 import ProfileScreen from './ProfileScreen'
 
 
@@ -38,20 +36,6 @@ const BottomNavigator = ({route, navigation}) => {
            }}
            />
      
-     <Tab.Screen name="FeedScreen" component={FeedScreen}
-           options={{
-               tabBarIcon:({focused}) => (
-                   <Icons name="newspaper-o" color={focused ? COLORS.grey : COLORS.white} size={26} />
-               ),
-               tabBarLabel:"Feeds",
-               tabBarLabelStyle:{color:COLORS.white, 
-                fontSize:13, fontSize:13, paddingBottom:Platform.OS === 'android' ? 8 : 0},
-               headerShadowVisible:false,
-               headerTitle:"News Feed",
-               headerTitleAlign:'left',
-               headerTitleStyle:{fontSize:18, color:COLORS.grey}
-           }}
-           />
         <Tab.Screen name="MessagesScreen" component={MessagesScreen}
            options={{
                tabBarIcon:({focused}) => (

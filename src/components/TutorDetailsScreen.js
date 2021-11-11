@@ -1,7 +1,10 @@
 import React from 'react'
 import { View, Text, Dimensions, Image, StyleSheet, Platform, StatusBar, TouchableOpacity } from 'react-native'
 import { ImageHeaderScrollView, TriggeringView } from 'react-native-image-header-scroll-view';
+import { Modal, ModalContent, ModalButton, ModalFooter, SlideAnimation, ModalTitle } from 'react-native-modals';
+import StarRating from 'react-native-star-rating-widget';
 import Feather from 'react-native-vector-icons/Feather';
+import { useState } from 'react/cjs/react.development';
 import userFemale from '../assets/avatar1.png'
 import userMale from '../assets/avatar2.png'
 import COLORS from '../assets/colors';
@@ -13,6 +16,18 @@ const MAX_HEIGHT = 150
 const TutorDetailsScreen = ({route, navigation}) => {
 
     const { gender, name, location, subjects, salary } = route.params.details
+     
+    const [ratings, setRatings] = useState(0)
+    const [visible, setVisible] = useState(false)
+
+    const handleModalPressed = () => {
+      setVisible(true)
+    }
+
+    const handleRating = (rate) => {
+      setRatings(rate)
+    }
+
     return (
     <View style={styles.container}>
         <StatusBar barStyle="light-content"/>
@@ -32,22 +47,64 @@ const TutorDetailsScreen = ({route, navigation}) => {
         </View>
       )}
     >
-    <View style={{height:900, backgroundColor:'#fefefe'}}>
     <TriggeringView>
          <View style={styles.personalWrapper}>
-           <View style={{flexDirection:'row', justifyContent:'space-between', marginBottom:10, alignItems:'center'}}>
+           <View style={{flexDirection:'row', justifyContent:'space-between', marginBottom:5, alignItems:'center'}}>
              <Text style={styles.title}>Personal Details</Text>
-             <TouchableOpacity>
+             <TouchableOpacity 
+             activeOpacity={0.6}
+             onPress={() => handleModalPressed()}
+             >
              <View style={styles.callBg}>
-                <Feather name="phone" color={COLORS.grey} size={25} />
+                <Feather name="message-square" color={COLORS.grey} size={25} />
              </View>
              </TouchableOpacity>
            </View>
+
+           {/* automatic messaging to the tutor from interested employer popup */}
+           <Modal
+    visible={visible}
+    width={0.9}
+    modalTitle={<ModalTitle title='Esther' />}
+    onTouchOutside={() => setVisible(false)}
+    modalAnimation={new SlideAnimation({
+        slideFrom: 'bottom',
+      })}
+    footer={
+        <ModalFooter>
+          <ModalButton
+            text="Leave Contact"
+            onPress={() => {}}
+          />
+          <ModalButton
+            text="Discard"
+            onPress={() => setVisible(false)}
+          />
+        </ModalFooter>
+      }
+  >
+    <ModalContent>
+        <View>
+            <Text style={{fontSize:15, lineHeight:22}}>{`Hello I am James, I just want to talk about tutoring service you offer. I left my contact, reach out to me for a conversation. Thanks`}</Text>
+        </View>
+    </ModalContent>
+  </Modal>
+
+           <View style={styles.aboutContainer}>
+        <Text style={styles.aboutText}>I like to teach english, I was born in family of five children
+             where education was as important as existence. I came with that open 
+             mind to give back to my community throught tuturing.</Text>
+            </View>
         
          <View style={styles.card}>
              <View style={styles.cardContent}>
                <Text style={{...styles.textContent,flex:1, fontWeight:'bold'}}>Full Name</Text>
                <Text style={{...styles.textContent, flex:2, textAlign:'right'}}>{name}</Text>
+             </View>
+
+             <View style={styles.cardContent}>
+               <Text style={{...styles.textContent,flex:1, fontWeight:'bold'}}>Gender</Text>
+               <Text style={{...styles.textContent, flex:2, textAlign:'right'}}>Male</Text>
              </View>
 
              <View style={styles.cardContent}>
@@ -60,8 +117,10 @@ const TutorDetailsScreen = ({route, navigation}) => {
              </View>
          </View>
          </View>
+     </TriggeringView>
 
-         <View style={styles.personalWrapper}>
+     <View style={styles.section}>
+     <View style={styles.personalWrapper}>
              <Text style={styles.title}>Academic Details</Text>
         
          <View style={styles.card}>
@@ -97,21 +156,38 @@ const TutorDetailsScreen = ({route, navigation}) => {
            ))}
          </View>
 
-         <View style={{...styles.card, paddingVertical:5, marginVertical:30}}>
+         <View style={{...styles.card, marginVertical:30}}>
+         
              <View style={styles.cardContent}>
-               <Text style={{...styles.textContent,flex:2, fontWeight:'bold'}}>Monthly Salary Range</Text>
-               <Text style={{...styles.textContent, flex:1, textAlign:'right'}}>RWF {salary}</Text>
+               <Text style={{...styles.textContent,flex:1, fontWeight:'bold'}}>Overall Rating</Text>
+               <Text style={{...styles.textContent, flex:2, textAlign:'right'}}>4.2 / 5</Text>
              </View>
-
-             <View style={{...styles.cardContent, borderBottomWidth:0}}>
+             <View style={styles.cardContent}>
                <Text style={{...styles.textContent,flex:1, fontWeight:'bold'}}>Availability</Text>
                <Text style={{...styles.textContent, flex:2, textAlign:'right'}}>Mon - Friday | 4:30PM - 9:00PM</Text>
              </View>
+            
+             <View style={{...styles.cardContent, borderBottomWidth:0}}>
+               <Text style={{...styles.textContent,flex:2, fontWeight:'bold'}}>Monthly Salary Range</Text>
+               <Text style={{...styles.textContent, flex:1, textAlign:'right'}}>RWF {salary}</Text>
+             </View>
              </View>
          </View>
-     </TriggeringView>
-    </View>
+
+         <View style={styles.personalWrapper}>
+         <Text style={styles.title}>Rate me</Text>
+         <View style={{...styles.subjectWrapper, flexWrap:'nowrap'}}>
+            <StarRating 
+            rating={ratings}
+            onChange={(rate) => handleRating(rate)}
+            starSize={40}
+            />
+         </View>
+         </View>
+
+     </View>
      
+    
     </ImageHeaderScrollView>
         </View>
     )
@@ -144,6 +220,10 @@ const styles = StyleSheet.create({
     marginHorizontal:10,
     marginTop:40
    },
+   section: {
+    paddingBottom: 40,
+    minHeight:300
+  },
    card:{
     backgroundColor:COLORS.white,
     borderRadius:3,
@@ -186,5 +266,16 @@ const styles = StyleSheet.create({
      paddingHorizontal:10,
      backgroundColor:'#CDF2CA',
      borderRadius:25,
-   }
+   },
+   aboutContainer:{
+    marginTop:10,
+    marginBottom:15,
+    paddingHorizontal:10
+},
+aboutText:{
+    fontSize:15,
+    color:COLORS.grey,
+    textAlign:'justify',
+    paddingTop:5
+},
   });

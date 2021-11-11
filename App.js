@@ -9,10 +9,14 @@ import TutorSignUpScreen from './src/components/TutorSignUpScreen'
 import ForgotPassword from './src/components/ForgotPassword'
 import BottomNavigator from './src/components/BottomNavigator'
 import TutorDetailsScreen from './src/components/TutorDetailsScreen'
+import { ModalPortal } from 'react-native-modals';
+
+
 
 const Stack = createNativeStackNavigator()
 export default function App() {
   return (
+    <>
     <NavigationContainer>
      <Stack.Navigator screenOptions={{headerShown: false}}>
        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
@@ -37,5 +41,7 @@ export default function App() {
        />
        </Stack.Navigator>
     </NavigationContainer>
+    <ModalPortal />
+    </>
   )
 }

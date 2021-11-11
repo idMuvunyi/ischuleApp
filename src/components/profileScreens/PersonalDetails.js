@@ -19,6 +19,11 @@ const PersonalDetails = () => {
              </View>
 
              <View style={styles.cardContent}>
+               <Text style={{...styles.textContent,flex:1, fontWeight:'bold'}}>Gender</Text>
+               <Text style={{...styles.textContent, flex:2, textAlign:'right'}}>Male</Text>
+             </View>
+
+             <View style={styles.cardContent}>
                <Text style={{...styles.textContent, flex:1, fontWeight:'bold'}}>Email</Text>
                <Text style={{...styles.textContent, flex:2, textAlign:'right'}}>muvunyiiddy@gmail.com</Text>
              </View>
