@@ -1,93 +1,143 @@
-import React, { useState } from 'react'
-import { View, Text, StyleSheet, TextInput, Platform, TouchableOpacity, StatusBar } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { View, Text, StyleSheet, 
+    TextInput, 
+    Platform, 
+    TouchableOpacity, 
+    StatusBar, 
+    ActivityIndicator,
+    Alert 
+} from 'react-native'
 import * as Animatable from 'react-native-animatable'
+import { connect } from 'react-redux'
+import auth, {firebase} from '@react-native-firebase/auth'
+import DoubleTapToClose from '../reusable-components/ExistAppHandler'
+import { login } from '../store/actions/actions'
 import LinearGradient from 'react-native-linear-gradient'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import Feather from 'react-native-vector-icons/Feather'
 import COLORS from '../assets/colors'
 
-const LoginScreen = ({navigation, route}) => {
+const LoginScreen = ({navigation, route, login}) => {
     const{ role } = route.params
 
-    const [data, setData] = useState({
-        email:'',
-        password:'',
-        checkTextInput:false,
-        secureTextEntry:true
-    })
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [secureTextEntry, setTextSecureTextEntry] = useState(true)
+    const [fetching, setFetching] = useState(false)
+    const [error, setError] = useState("")
+    const [isValid, setValid] = useState(true)
 
-    const textInputChange = (val) => {
-       if(val.length !== 0){
-           setData({
-               ...data, 
-               email:val,
-               checkTextInput:true
-           })
-       }else{
-        setData({
-            ...data, 
-            email:val,
-            checkTextInput:false
-        })
-       }
-    }
-
-    const handlePassword = (value) => {
-        setData({
-            ...data, 
-            password:value
-        })
-    }
+    
 
     const ChangeSecureTextEntry = () => {
-        setData({
-            ...data, 
-            secureTextEntry:!data.secureTextEntry
-        })
+        setTextSecureTextEntry(!secureTextEntry)
     }
 
     const handleSignUp = () => {
      navigation.navigate('TutorSignUpScreen', {role: role})  
     }
-    const handleSignIn = () => {
-        navigation.navigate('BottomNavigator', {role: role})
+
+    const validateEmail = (email) => {
+        const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(String(email).toLowerCase());
     }
+
+    const handleSignIn = () => {
+
+        // implement some validations
+        const trimmedPass = password.trim()
+        if(!email){
+            setError("Email required *")
+            setValid(false)
+            return
+         }  else if (!validateEmail(email)) {
+            setError("Invalid Email")
+            setValid(false)
+            return
+          }
+          else if (!trimmedPass || password.length < 6) {
+            setError("Weak password, minimum 6 chars")
+            setValid(false)
+            return
+          }
+
+          setError("")
+          setFetching(true)
+        
+      loginAsync()       
+    }
+
+
+
+    const loginAsync = async () => {
+        login(email, password, (res, stats) => {
+
+            if(stats === true){
+            firebase.auth().onAuthStateChanged((user) => {
+                if(user){
+                    if (user.emailVerified === false) {
+                        user.sendEmailVerification()
+                        setFetching(false)
+                         Alert.alert('Verification','Please check your email for account verification.')
+                         return
+                     }
+                     else if(user.emailVerified === true){
+                        setFetching(false)
+                        setEmail("")
+                        setPassword("")
+                        navigation.navigate('BottomNavigator', {role: role})
+                    }
+                }
+            
+           })
+        }
+            else if(res.includes("auth/user-not-found")){
+                setFetching(false)
+                Alert.alert('Sign In','Email address provided is not registered.') 
+            }
+            else if(res.includes("auth/wrong-password")){
+                setFetching(false)
+                Alert.alert('Sign In','The password is invalid or the user does not have a password.') 
+            }
+
+            
+        }) 
+    }
+
+   
+    
     const handleChangePassword = () => {
         navigation.navigate('ForgotPassword')
     }
 
     return (
         <View style={styles.containerStyle}>
+           <DoubleTapToClose />
             <StatusBar backgroundColor={COLORS.primary} barStyle='light-content' />
             <View style={styles.header}>
                 <Text style={{fontSize:16}}>Welcome To, </Text>
-               <Text style={styles.textHeader}>iSchule</Text>
+               <Text style={styles.textHeader}>iShur App</Text>
             </View>
             <Animatable.View
              animation="fadeInUpBig"
             style={styles.footer}
             >
+                {fetching && <ActivityIndicator color={COLORS.primary} size="large"/>}
                <Text style={styles.text_footer}>Email</Text>
                <View style={styles.inputWrapper}>
                <FontAwesome name="user-o"  color={COLORS.grey} size={20}/>
                <TextInput 
                placeholder="Enter your email"
                style={styles.TextInput}
+               keyboardType="email-address"
                autoCapitalize="none"
-               onChangeText={(value) => textInputChange(value)}
+               value={email}
+               onChangeText={(value) => {
+                setError   
+                setEmail(value)
+               }}
+               error={isValid}
                />
-               {data.checkTextInput ? 
-               <Animatable.View 
-               animation="bounceIn"
-               >
-               <Feather
-               name="check-circle"
-               color={COLORS.success}
-               size={20}
-               />
-               </Animatable.View>
-               : null
-                   }
                </View>
                
                <Text style={{...styles.text_footer, marginTop:35}}>Password</Text>
@@ -95,15 +145,20 @@ const LoginScreen = ({navigation, route}) => {
                <Feather name="lock"  color={COLORS.grey} size={20}/>
                <TextInput 
                placeholder="Enter your password"
-               secureTextEntry={data.secureTextEntry ? true : false}
+               secureTextEntry={secureTextEntry ? true : false}
                style={styles.TextInput}
                autoCapitalize="none"
-               onChangeText={(value) => handlePassword(value)}
+               value={password}
+               onChangeText={(value) => {
+                setError
+                setPassword(value)
+               }}
+               error={isValid}
                />
                <TouchableOpacity
                onPress={ChangeSecureTextEntry}
                >
-            {data.secureTextEntry ?
+            {secureTextEntry ?
                <Feather
                name="eye-off"
                color={COLORS.grey}
@@ -118,6 +173,12 @@ const LoginScreen = ({navigation, route}) => {
             }
             </TouchableOpacity>
                </View >
+               {error ? (
+               <View>
+                <Text style={styles.errorTextStyle}>{error}</Text>
+              </View>
+              ) : null}
+
                <View style={styles.button}>
                    <TouchableOpacity
                    style={styles.signIn}
@@ -168,8 +229,6 @@ const styles = StyleSheet.create({
     footer:{
         flex:3,
         backgroundColor:"#fff",
-        borderTopLeftRadius:30,
-        borderTopRightRadius:30,
         paddingHorizontal:20,
         paddingVertical:30
     },
@@ -216,7 +275,15 @@ const styles = StyleSheet.create({
         color:COLORS.grey,
         textAlign:'center',
         padding:20
+    },
+    errorTextStyle:{
+        color:'red',
+        paddingTop:10
     }
 })
 
-export default LoginScreen
+const mapDispatchToProps = {
+    login,
+}
+
+export default connect(null, mapDispatchToProps)(LoginScreen)

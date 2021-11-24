@@ -1,11 +1,14 @@
-import React, { useState } from 'react'
-import { View, Text, StyleSheet, StatusBar, Image, useWindowDimensions} from 'react-native'
+import React, { useState, useEffect } from 'react'
+import { View, Text, StyleSheet, StatusBar, Image, useWindowDimensions, ActivityIndicator} from 'react-native'
 import { TabView, SceneMap, TabBar} from 'react-native-tab-view'
 import Feather from 'react-native-vector-icons/Feather'
+import userImage from '../assets/user-male.png'
+import userFemale from '../assets/avatar1.png'
 import COLORS from '../assets/colors'
 import ProfessionalDetails from './profileScreens/ProfessionalDetails'
 import AcademicDetails from './profileScreens/AcademicDetails'
 import PersonalDetails from './profileScreens/PersonalDetails'
+import { connect } from 'react-redux'
 
 
 
@@ -15,7 +18,15 @@ const renderScene = SceneMap({
     third: ProfessionalDetails
 })
 
-const ProfileScreen = () => {
+const ProfileScreen = ({userDetails}) => {
+
+    const [userInfo, setUserInfo] = useState([])
+    const [fetching, setFetching] = useState(true)
+  
+  useEffect(() => {
+      setUserInfo([...(userDetails !== null ? userDetails : [])])
+      setFetching(false)
+    }, [userDetails])
 
     const layout = useWindowDimensions();
 
@@ -40,12 +51,14 @@ const ProfileScreen = () => {
 
     return (
         <View style={styles.container}>
+            {fetching ? <ActivityIndicator color={COLORS.primary} size="large" style={{flex:1, justifyContent:'center', alignItems:'center'}}/> 
+        : <>
             <StatusBar backgroundColor={COLORS.secondary} barStyle='light-content' />
             <View style={styles.headerView}>
                 <View style={styles.headerWrapper}>
-                <Image source={require('../assets/user-male.png')} style={styles.userImage}/>
+                <Image source={userInfo && userInfo[0].gender === "Female" ? userFemale : userImage} style={styles.userImage}/>
                 <View style={styles.nameIcon}>
-                <Text style={{fontSize:20, fontWeight:'bold', marginRight:10}}>Tuyishime Edouard</Text>
+                <Text style={{fontSize:18, fontWeight:'bold', marginRight:10}}>{userInfo && userInfo.length ? `${userInfo[0].FirstName} ${userInfo[0].lastName}` : null}</Text>
                 <Feather name="edit-2" color={COLORS.grey} size={20} />
                 </View>
                 </View>
@@ -60,11 +73,12 @@ const ProfileScreen = () => {
                  renderTabBar={renderTabBar}
                 />
             </View>
+            </>
+     }
         </View>
     )
 }
 
-export default ProfileScreen
 
 const styles = StyleSheet.create({
     container:{
@@ -72,13 +86,13 @@ const styles = StyleSheet.create({
         backgroundColor:COLORS.white
     },
     headerView:{
-        flex:1,
+        flex:2,
         backgroundColor:'#F4F9F9',
         paddingHorizontal:20,
-        paddingVertical:50,
+        paddingVertical:40,
     },
     footerView:{
-        flex:3,
+        flex:4,
         backgroundColor:'#F4F9F9',
         
     },
@@ -89,12 +103,20 @@ const styles = StyleSheet.create({
     },
     headerWrapper:{
         alignItems:'center',
-        paddingVertical:10,
     },
     nameIcon:{
         flexDirection:'row',
         alignItems:'center',
-        paddingVertical:10
+        marginVertical:10
     },
     
 })
+
+const mapStateToProps = state => {
+    const { userAuth } = state;
+      return{
+        userDetails: userAuth
+      }
+    }
+  
+export default connect(mapStateToProps, null)(ProfileScreen)

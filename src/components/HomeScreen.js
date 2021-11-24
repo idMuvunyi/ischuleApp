@@ -1,5 +1,5 @@
-import React from 'react'
-import { View, Text, StyleSheet, StatusBar, Platform, SafeAreaView, TouchableOpacity, TextInput, FlatList, Image, Dimensions } from 'react-native'
+import React,{useState, useEffect} from 'react'
+import { View, Text, StyleSheet, StatusBar, Platform, SafeAreaView, TouchableOpacity, TextInput, FlatList, Image, Dimensions, Alert, ActivityIndicator } from 'react-native'
 import userImage from '../assets/user-male.png'
 import userFemale from '../assets/avatar1.png'
 import userMale from '../assets/avatar2.png'
@@ -10,14 +10,68 @@ import OptionsMenu from 'react-native-option-menu'
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import HeaderTab from '../reusable-components/HeaderTab'
 import { tutors } from '../rawData/tutors'
+import auth,{firebase} from '@react-native-firebase/auth'
+import { connect } from 'react-redux'
+import { setInfo ,logout, setFees } from '../store/actions/actions'
+import DoubleTapToClose from '../reusable-components/ExistAppHandler'
 
 
 
 
-const width = Dimensions.get("screen").width
+const HomeScreen = ({navigation, role, user, setInfo, logout, setFees}) => {
 
-const HomeScreen = ({navigation, user}) => {
+  const [userInfo, setUserInfo] = useState([])
+  const [fetching, setFetching] = useState(true)
 
+
+useEffect(() => {
+    handleUserInfo()
+    // for testing fees
+      handleSetFees()
+  },[])
+
+useEffect(() => {
+    setUserInfo([...(user !== null ? user : [])])
+  }, [user])
+
+const handleSetFees = async () => {
+  setFees((res, status) => {
+    if(status){
+      console.log('fetched sucessfully')
+    }else{
+      console.log('could not fetch')
+    }
+  })
+}
+
+const handleUserInfo = async () => {
+  setInfo( (data, status) => {
+if(status){
+  setFetching(false)
+}
+  })
+}
+
+  const goToPofile = () => {
+    navigation.navigate('ProfileScreen')
+  }
+  const handleSignOut = () => {
+    getMeOut()
+  }
+
+  const getMeOut = async () => {
+    logout(stats => {
+      if(stats === true){
+        navigation.navigate('LoginScreen', {role:role})
+      }else{
+        Alert.alert('Sign Out', 'Can not sign out right now. Try again.')
+      }
+    })
+  }
+
+  const shareApp = () => {
+     Alert.alert('Share', 'coming soon.')  
+  }
 
     const TutorSpace = ({items}) => {
         return(
@@ -70,24 +124,28 @@ const HomeScreen = ({navigation, user}) => {
         )
     }
 
-    const handleMenuOptions = () => {}
+
+     
     return (
         <SafeAreaView style={styles.wrapper}>
+           <DoubleTapToClose />
+        {fetching ? <ActivityIndicator color={COLORS.primary} size="large" style={{flex:1, justifyContent:'center', alignItems:'center'}}/> 
+        : <>
             <StatusBar backgroundColor={COLORS.primary} barStyle={Platform.OS === 'android' ? 'light-content': 'default' }/>
             <View style={styles.homeStyle}>
             <View style={styles.header}>
                 <View>
                    <Text style={styles.wlcmText}>Hello, </Text>
-                   <Text style={{fontSize:18, color:COLORS.secondary, fontWeight:'600'}}>{user}</Text>
+                   <Text style={{fontSize:18, color:COLORS.secondary, fontWeight:'600'}}>{userInfo && userInfo.length ? userInfo[0].lastName : null}</Text>
                 </View>
                 <TouchableOpacity>
                 <View>
                 <OptionsMenu
-                   button={userImage}
+                   button={userInfo && userInfo[0].gender === "Female" ? userFemale : userImage}
                     buttonStyle={{ height: 50, width: 50, borderRadius: 20 }}
-                    destructiveIndex={2}
-                    options={["My Profile", "Share App" ,"Sign out"]}
-                    actions={[handleMenuOptions]}
+                    //destructiveIndex={1} ios only
+                    options={["Sign out","Share App" ]}
+                    actions={[handleSignOut, shareApp,]}
                   />
                 </View>
                 </TouchableOpacity>
@@ -110,11 +168,12 @@ const HomeScreen = ({navigation, user}) => {
             }
             keyExtractor={item => item.id}
             />
+            </>
+     }
         </SafeAreaView>
     )
 }
 
-export default HomeScreen
 
 const styles = StyleSheet.create({
     wrapper:{
@@ -176,3 +235,17 @@ const styles = StyleSheet.create({
     }
     
 })
+
+const mapStateToProps = state => {
+const { userAuth } = state;
+  return{
+    user: userAuth
+  }
+}
+const mapDispatchToProps = {
+  logout,
+  setInfo,
+  setFees
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen)

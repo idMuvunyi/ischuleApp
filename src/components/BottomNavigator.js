@@ -1,7 +1,8 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import { View, Text, Platform } from 'react-native'
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
 import HomeScreen from './HomeScreen'
+import auth,{firebase} from '@react-native-firebase/auth'
 import COLORS from '../assets/colors'
 import Icon from 'react-native-vector-icons/AntDesign'
 import MessagesScreen from './MessagesScreen'
@@ -10,8 +11,23 @@ import ProfileScreen from './ProfileScreen'
 
 const Tab = createBottomTabNavigator()
 
+
 const BottomNavigator = ({route, navigation}) => {
     const { role } = route.params 
+
+    useEffect(() => {
+        isTheUserAuthenticated()
+    },[navigation])
+    
+    const isTheUserAuthenticated = () => {
+        firebase.auth().onAuthStateChanged((user) => {
+            if(user === null){
+                navigation.navigate('LoginScreen', {role: 'employer'})
+            }
+        })
+       
+    }
+
     return (
        <Tab.Navigator
        screenOptions={{
@@ -24,7 +40,7 @@ const BottomNavigator = ({route, navigation}) => {
        }}
        >
      <Tab.Screen name="HomeScreen" 
-     children={() => <HomeScreen user={role} navigation={navigation}/>}
+     children={() => <HomeScreen role={role} navigation={navigation}/>}
            options={{
                tabBarIcon:({focused}) => (
                    <Icon name="home" color={focused ? COLORS.grey : COLORS.white} size={28} />

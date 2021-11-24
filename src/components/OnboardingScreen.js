@@ -1,8 +1,23 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import { View, Text, Image } from 'react-native'
 import Onboarding from 'react-native-onboarding-swiper'
+import auth, {firebase} from '@react-native-firebase/auth'
 
 export default function OnboardingScreen({navigation}) {
+
+    useEffect(() => {
+        isTheUserAuthenticated()
+    },[navigation])
+
+    const isTheUserAuthenticated = () => {
+        firebase.auth().onAuthStateChanged((user) => {
+            if(user != null && user.emailVerified){
+                navigation.navigate('BottomNavigator', {role: 'employer'})
+            }
+        })
+       
+    }
+
     return (
         <Onboarding
         imageContainerStyles={{}}

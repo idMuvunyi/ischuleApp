@@ -1,64 +1,100 @@
 import React, { useState } from 'react'
-import { View, Text, StyleSheet, TextInput, Platform, TouchableOpacity, StatusBar, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, TextInput, Platform, 
+    TouchableOpacity, StatusBar, ScrollView, Alert, ActivityIndicator
+} from 'react-native'
 import * as Animatable from 'react-native-animatable'
 import LinearGradient from 'react-native-linear-gradient'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import Feather from 'react-native-vector-icons/Feather'
 import COLORS from '../assets/colors'
+import { register } from '../store/actions/actions'
 
 const TutorSignUpScreen = ({route, navigation}) => {
    const {role} = route.params
-    const [data, setData] = useState({
-        email:'',
-        password:'',
-        checkTextInput:false,
-        secureTextEntry:true
-    })
-
-    const textInputChange = (val) => {
-       if(val.length !== 0){
-           setData({
-               ...data, 
-               email:val,
-               checkTextInput:true
-           })
-       }else{
-        setData({
-            ...data, 
-            email:val,
-            checkTextInput:false
-        })
-       }
-    }
-
-    const handlePassword = (value) => {
-        setData({
-            ...data, 
-            password:value
-        })
-    }
+    const [firstName, setFirstName] = useState("")
+    const [lastName, setLastName] = useState("")
+    const [email, setEmail] = useState("")
+    const [secureTextEntry, setTextSecureTextEntry] = useState(true)
+    const [password, setPassword] = useState("")
+    const [fetching, setFetching] = useState(false)
+    const [error, setError] = useState("")
+    const [isValid, setValid] = useState(true)
+        
 
     const ChangeSecureTextEntry = () => {
-        setData({
-            ...data, 
-            secureTextEntry:!data.secureTextEntry
-        })
+        setTextSecureTextEntry(!secureTextEntry)
     }
 
+    const validateEmail = (email) => {
+        const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(String(email).toLowerCase());
+    }
+
+    const handleSignUp = () => {
+        // implement some validations
+        const trimmedPass = password.trim()
+        if(!firstName){
+            setError("First Name required *")
+            setValid(false)
+            return
+         }
+         else if(!lastName){
+            setError("Last Name required *")
+            setValid(false)
+            return
+         }
+         else if(!email){
+            setError("Email required *")
+            setValid(false)
+            return
+         } else if (!trimmedPass || password.length < 6) {
+            setError("Weak password, minimum 6 chars")
+            setValid(false)
+            return
+          } else if (!validateEmail(email)) {
+            setError("Invalid Email")
+            setValid(false)
+            return
+          }
+
+          setError("")
+          setFetching(true)
+
+        register(email, password, firstName, lastName, role, (res, stats) => {
+            
+            if(stats){
+               setFetching(false)
+               setFirstName("")
+               setLastName("")
+               setEmail("")
+               setPassword("")
+                Alert.alert("Success ✅", "Account created successfully")
+                
+            }
+            else if(res.includes("auth/email-already-in-use")){
+                setFetching(false)
+                Alert.alert("Sign Up","The email address is already in use by another account.") 
+            }
+
+            
+        })
+
+    }
    
 
     return (
         <View style={styles.containerStyle}>
             <StatusBar backgroundColor={COLORS.primary} barStyle='light-content' />
             <View style={styles.header}>
-                <Text style={{fontSize:16}}>Welcome To, </Text>
-               <Text style={styles.textHeader}>iSchule</Text>
+                <Text style={{fontSize:16}}>Create an account, </Text>
+               <Text style={styles.textHeader}>iShur App</Text>
             </View>
-           
+            
             <Animatable.View
              animation="fadeInUpBig"
             style={styles.footer}
             >
+                {fetching && <ActivityIndicator color={COLORS.primary} size="large"/>}
             <ScrollView 
             showsVerticalScrollIndicator={false}
             >
@@ -66,45 +102,33 @@ const TutorSignUpScreen = ({route, navigation}) => {
                <View style={styles.inputWrapper}>
                <FontAwesome name="user-o"  color={COLORS.grey} size={20}/>
                <TextInput 
-               placeholder="Enter your email"
+               placeholder="Enter first name"
+               value={firstName}
                style={styles.TextInput}
                autoCapitalize="none"
-               onChangeText={(value) => textInputChange(value)}
+               onChangeText={text => {
+                setError
+                setFirstName(text)
+              }}
+              error={isValid}
                />
-               {data.checkTextInput ? 
-               <Animatable.View 
-               animation="bounceIn"
-               >
-               <Feather
-               name="check-circle"
-               color={COLORS.success}
-               size={20}
-               />
-               </Animatable.View>
-               : null
-                   }
                </View>
+              
+
                <Text style={{...styles.text_footer, marginTop:35}}>Last Name</Text>
                <View style={styles.inputWrapper}>
                <FontAwesome name="user-o"  color={COLORS.grey} size={20}/>
                <TextInput 
-               placeholder="Enter your email"
+               placeholder="Enter last name"
+               value={lastName}
                style={styles.TextInput}
                autoCapitalize="none"
-               onChangeText={(value) => textInputChange(value)}
+               onChangeText={(value) => {
+                   setError
+                   setLastName(value)
+                }}
+                error={isValid}
                />
-               {data.checkTextInput ? 
-               <Animatable.View 
-               animation="bounceIn"
-               >
-               <Feather
-               name="check-circle"
-               color={COLORS.success}
-               size={20}
-               />
-               </Animatable.View>
-               : null
-                   }
                </View>
 
                <Text style={{...styles.text_footer, marginTop:35}}>Email</Text>
@@ -112,38 +136,40 @@ const TutorSignUpScreen = ({route, navigation}) => {
                <FontAwesome name="user-o"  color={COLORS.grey} size={20}/>
                <TextInput 
                placeholder="Enter your email"
+               value={email}
+               keyboardType="email-address"
                style={styles.TextInput}
                autoCapitalize="none"
-               onChangeText={(value) => textInputChange(value)}
+               onChangeText={text => {
+                setError
+                setEmail(text)
+              }}
+              error={isValid}
                />
-               {data.checkTextInput ? 
-               <Animatable.View 
-               animation="bounceIn"
-               >
-               <Feather
-               name="check-circle"
-               color={COLORS.success}
-               size={20}
-               />
-               </Animatable.View>
-               : null
-                   }
                </View>
+              
                
                <Text style={{...styles.text_footer, marginTop:35}}>Password</Text>
                <View style={styles.inputWrapper}>
                <Feather name="lock"  color={COLORS.grey} size={20}/>
                <TextInput 
                placeholder="Enter your password"
-               secureTextEntry={data.secureTextEntry ? true : false}
+               secureTextEntry={secureTextEntry ? true : false}
                style={styles.TextInput}
+               value={password}
                autoCapitalize="none"
-               onChangeText={(value) => handlePassword(value)}
+               onChangeText={(value) => {
+                   setError
+                setPassword(value)
+               } 
+                
+               }
+               error={isValid}
                />
                <TouchableOpacity
                onPress={ChangeSecureTextEntry}
                >
-            {data.secureTextEntry ?
+            {secureTextEntry ?
                <Feather
                name="eye-off"
                color={COLORS.grey}
@@ -158,37 +184,15 @@ const TutorSignUpScreen = ({route, navigation}) => {
             }
             </TouchableOpacity>
                </View >
-
-               <Text style={{...styles.text_footer, marginTop:35}}>Confirm Password</Text>
-               <View style={styles.inputWrapper}>
-               <Feather name="lock"  color={COLORS.grey} size={20}/>
-               <TextInput 
-               placeholder="Confirm password"
-               secureTextEntry={data.secureTextEntry ? true : false}
-               style={styles.TextInput}
-               autoCapitalize="none"
-               onChangeText={(value) => handlePassword(value)}
-               />
-               <TouchableOpacity
-               onPress={ChangeSecureTextEntry}
-               >
-            {data.secureTextEntry ?
-               <Feather
-               name="eye-off"
-               color={COLORS.grey}
-               size={20}
-               />
-               :
-                <Feather
-               name="eye"
-               color={COLORS.grey}
-               size={20}
-               />
-            }
-            </TouchableOpacity>
-               </View >
+               {error ? (
+               <View>
+                <Text style={styles.errorTextStyle}>{error}</Text>
+              </View>
+              ) : null}
+    
                <View style={styles.button}>
                <TouchableOpacity
+               onPress={() => handleSignUp()}
                    style={styles.signIn}
                    >
                   <LinearGradient
@@ -225,13 +229,11 @@ const styles = StyleSheet.create({
         flex:1,
         justifyContent:'flex-end',
         paddingHorizontal:20,
-        paddingBottom: 50
+        paddingBottom: 50,
     },
     footer:{
         flex:3,
         backgroundColor:"#fff",
-        borderTopLeftRadius:30,
-        borderTopRightRadius:30,
         paddingHorizontal:20,
         paddingVertical:30,
     },
@@ -272,7 +274,13 @@ const styles = StyleSheet.create({
         fontSize:18,
         fontWeight:'bold',
         color:'#fff'
+    },
+    errorTextStyle:{
+        color:'red',
+        paddingTop:10
     }
 })
 
-export default TutorSignUpScreen
+
+
+export default TutorSignUpScreen;

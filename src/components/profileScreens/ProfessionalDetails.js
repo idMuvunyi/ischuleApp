@@ -1,17 +1,30 @@
-import React from 'react'
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React, {useState, useEffect} from 'react'
+import { Alert, StyleSheet, Text, TouchableOpacity, View, ScrollView, ActivityIndicator } from 'react-native'
 import AntDesign from 'react-native-vector-icons/AntDesign'
+import { connect } from 'react-redux'
 import COLORS from '../../assets/colors'
 import { tutors } from '../../rawData/tutors'
-//import ModalSelector from 'react-native-modal-selector'
 
-const ProfessionalDetails = () => {
+const ProfessionalDetails = ({userDetails}) => {
 
-        const addNewSubject = () => {
-            alert('Item needs to be added')
-        }
+  const [userInfo, setUserInfo] = useState([])
+  const [fetching, setFetching] = useState(true)
+
+useEffect(() => {
+    setUserInfo([...(userDetails !== null ? userDetails : [])])
+    setFetching(false)
+  }, [userDetails])
+
+  const addNewSubject = () => {
+  alert('Item needs to be added')
+   }
 return(
+  <ScrollView
+      showsVerticalScrollIndicator={false}
+      >
     <View style={styles.container}>
+    {fetching ? <ActivityIndicator color={COLORS.primary} size="large" style={{flex:1, justifyContent:'center', alignItems:'center'}}/> 
+        : <>
         <View style={styles.subjectWrapper}>
            {tutors[5].subjects.map((item, index) => (
            <View style={styles.subjectsBg} key={index}>
@@ -27,32 +40,38 @@ return(
             </View>
            </TouchableOpacity>
          </View>
-         <View style={{...styles.card, marginTop:20}}>
+         {userInfo && userInfo.length ?   
+            userInfo.map((item, index) => (
+         <View style={{...styles.card, marginTop:20}} key={index}>
              <View style={styles.cardContent}>
                <Text style={{...styles.textContent,flex:2, fontWeight:'bold'}}>Monthly Salary Range</Text>
-               <Text style={{...styles.textContent, flex:1, textAlign:'right'}}>RWF 30-70K</Text>
+               <Text style={{...styles.textContent, flex:1, textAlign:'right'}}>{`RWF ${item.salary}-${item.salaryTo}K`}</Text>
              </View>
 
              <View style={styles.cardContent}>
                <Text style={{...styles.textContent,flex:1, fontWeight:'bold'}}>Availability</Text>
-               <Text style={{...styles.textContent, flex:2, textAlign:'right'}}>Mon - Friday | 4:30PM - 9:00PM</Text>
+               <Text style={{...styles.textContent, flex:2, textAlign:'right'}}>{`${item.availability} | ${item.availableTime}`}</Text>
              </View>
 
              <View style={{...styles.cardContent, borderBottomWidth:0}}>
                <Text style={{...styles.textContent,flex:1, fontWeight:'bold'}}>My Ratings</Text>
-               <Text style={{...styles.textContent, flex:2, textAlign:'right'}}>3.5</Text>
+               <Text style={{...styles.textContent, flex:2, textAlign:'right'}}>{Number(item.ratings).toFixed(1)}</Text>
              </View>
              </View>
+             )): 
+             null
+               }
+                 </>
+            }
     </View>
+    </ScrollView>
 )
 }
-
-export default ProfessionalDetails
 
 const styles = StyleSheet.create({
     container:{
         flex:1,
-        paddingTop:30
+        marginVertical:30
     },
     subjectWrapper:{
         flexDirection:'row',
@@ -70,7 +89,7 @@ const styles = StyleSheet.create({
     card:{
         backgroundColor:COLORS.white,
         borderRadius:3,
-        elevation:0,
+        elevation:0.5,
         alignItems:'center',
         paddingVertical:25,
         margin:10
@@ -89,3 +108,12 @@ const styles = StyleSheet.create({
        },
        
     });
+
+    const mapStateToProps = state => {
+      const { userAuth } = state;
+        return{
+          userDetails: userAuth
+        }
+      }
+    
+    export default connect(mapStateToProps, null)(ProfessionalDetails)

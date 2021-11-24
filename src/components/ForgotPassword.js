@@ -1,34 +1,62 @@
 import React, { useState } from 'react'
-import { View, Text, StyleSheet, TextInput, Platform, TouchableOpacity, StatusBar } from 'react-native'
+import { View, Text, StyleSheet, TextInput, Platform, TouchableOpacity, StatusBar, Alert, ActivityIndicator } from 'react-native'
 import * as Animatable from 'react-native-animatable'
 import LinearGradient from 'react-native-linear-gradient'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
-import Feather from 'react-native-vector-icons/Feather'
+import { resetPassword } from '../store/actions/actions'
 import COLORS from '../assets/colors'
 
-const ForgotPassword = ({navigation}) => {
 
-    const [data, setData] = useState({
-        email:'',
-       
-    })
+const ForgotPassword = ({navigation, role}) => {
 
-    const textInputChange = (val) => {
-       if(val.length !== 0){
-           setData({
-               ...data, 
-               email:val,
-           })
-       }else{
-        setData({
-            ...data, 
-            email:val,
-        })
-       }
+    const [email, setEmail] = useState('')
+    const [fetching, setFetching] = useState(false)
+    const [error, setError] = useState("")
+    const [isValid, setValid] = useState(true)
+
+    const validateEmail = (email) => {
+        const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(String(email).toLowerCase());
     }
 
-    const handleSignUp = () => {
-     navigation.navigate('TutorSignUpScreen', {role: role})  
+    const handleResetPassword = () => {
+
+        if(!email){
+            setError("Email required *")
+            setValid(false)
+            return
+         }  else if (!validateEmail(email)) {
+            setError("Invalid Email")
+            setValid(false)
+            return
+          }
+
+          setError("")
+          setFetching(true)
+        
+      resetAsync()
+    }
+
+    const resetAsync = () => {
+        resetPassword(email, (res, status) => {
+            if(status === true){
+             setFetching(false)
+             Alert.alert('Password Reset','Please check your email to reset password.')
+             navigation.navigate('LoginScreen', {role:role})
+            }
+            else if(res.includes("auth/invalid-email")){
+             setFetching(false)
+             Alert.alert('Password Reset','Email address provided is not valid.') 
+         }
+         else {
+             setFetching(false)
+             Alert.alert('Password Reset','Try password reset again.') 
+         }
+       })
+    }
+
+    const handleSignIn = () => {
+     navigation.navigate('LoginScreen', {role: role})  
     }
 
     return (
@@ -42,20 +70,32 @@ const ForgotPassword = ({navigation}) => {
              animation="fadeInUpBig"
             style={styles.footer}
             >
+                 {fetching && <ActivityIndicator color={COLORS.primary} size="large"/>}
                <Text style={styles.text_footer}>Email</Text>
                <View style={styles.inputWrapper}>
                <FontAwesome name="user-o"  color={COLORS.grey} size={20}/>
                <TextInput 
                placeholder="Enter your email"
+               keyboardType="email-address"
                style={styles.TextInput}
                autoCapitalize="none"
-               onChangeText={(value) => textInputChange(value)}
+               value={email}
+               onChangeText={(value) => {
+                setError   
+                setEmail(value)
+               }}
+               error={isValid}
                />
-              
                </View >
+               {error ? (
+               <View>
+                <Text style={styles.errorTextStyle}>{error}</Text>
+              </View>
+              ) : null}
                <View style={styles.button}>
                <TouchableOpacity
                    style={styles.signIn}
+                   onPress={() => handleResetPassword()}
                    >
                   <LinearGradient
                   colors={[COLORS.grey, COLORS.secondary]}
@@ -63,6 +103,16 @@ const ForgotPassword = ({navigation}) => {
                   >
                       <Text style={styles.textSign}>Reset Password</Text>
                   </LinearGradient>
+                  </TouchableOpacity>
+                  <TouchableOpacity 
+                  onPress={() => handleSignIn()}
+                  style={{...styles.signIn,
+                     borderColor:COLORS.primary,
+                    borderWidth:1,
+                    marginTop:15
+                }}
+                  >
+                      <Text style={{...styles.textSign, color:COLORS.primary}}>Log In</Text>
                   </TouchableOpacity>
                </View>
             </Animatable.View>
@@ -132,7 +182,13 @@ const styles = StyleSheet.create({
         color:COLORS.grey,
         textAlign:'center',
         padding:20
+    },
+    errorTextStyle:{
+        color:'red',
+        paddingTop:10
     }
 })
+
+
 
 export default ForgotPassword
