@@ -12,37 +12,27 @@ import HeaderTab from '../reusable-components/HeaderTab'
 import { tutors } from '../rawData/tutors'
 import auth,{firebase} from '@react-native-firebase/auth'
 import { connect } from 'react-redux'
-import { setInfo ,logout, setFees } from '../store/actions/actions'
+import { setInfo ,logout } from '../store/actions/actions'
 import DoubleTapToClose from '../reusable-components/ExistAppHandler'
 
 
 
 
-const HomeScreen = ({navigation, role, user, setInfo, logout, setFees}) => {
+const HomeScreen = ({navigation, role, user, setInfo, logout}) => {
 
   const [userInfo, setUserInfo] = useState([])
   const [fetching, setFetching] = useState(true)
 
-
+// call this in bottomNavigator (parent)
 useEffect(() => {
     handleUserInfo()
-    // for testing fees
-      handleSetFees()
   },[])
 
 useEffect(() => {
     setUserInfo([...(user !== null ? user : [])])
   }, [user])
 
-const handleSetFees = async () => {
-  setFees((res, status) => {
-    if(status){
-      console.log('fetched sucessfully')
-    }else{
-      console.log('could not fetch')
-    }
-  })
-}
+
 
 const handleUserInfo = async () => {
   setInfo( (data, status) => {
@@ -141,7 +131,7 @@ if(status){
                 <TouchableOpacity>
                 <View>
                 <OptionsMenu
-                   button={userInfo && userInfo[0].gender === "Female" ? userFemale : userImage}
+                   button={user && user.length ? (userInfo[0].gender === "Female" ? userFemale : userImage): null}
                     buttonStyle={{ height: 50, width: 50, borderRadius: 20 }}
                     //destructiveIndex={1} ios only
                     options={["Sign out","Share App" ]}
@@ -245,7 +235,6 @@ const { userAuth } = state;
 const mapDispatchToProps = {
   logout,
   setInfo,
-  setFees
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen)

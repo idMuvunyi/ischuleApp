@@ -43,7 +43,7 @@ const BottomNavigator = ({route, navigation}) => {
      children={() => <HomeScreen role={role} navigation={navigation}/>}
            options={{
                tabBarIcon:({focused}) => (
-                   <Icon name="home" color={focused ? COLORS.grey : COLORS.white} size={28} />
+                   <Icon name="home" color={focused ? COLORS.grey : COLORS.white} size={23} />
                ),
                tabBarLabel:"Home",
                tabBarLabelStyle:{color:COLORS.white, 
@@ -55,7 +55,7 @@ const BottomNavigator = ({route, navigation}) => {
         <Tab.Screen name="MessagesScreen" component={MessagesScreen}
            options={{
                tabBarIcon:({focused}) => (
-                   <Icon name="message1" color={focused ? COLORS.grey : COLORS.white} size={28} />
+                   <Icon name="message1" color={focused ? COLORS.grey : COLORS.white} size={23} />
                ),
                tabBarLabel:"Messages",
                tabBarLabelStyle:{color:COLORS.white, 
@@ -70,7 +70,7 @@ const BottomNavigator = ({route, navigation}) => {
     <Tab.Screen name="ProfileScreen" component={ProfileScreen}
            options={{
                tabBarIcon:({focused}) => (
-                <Icon name="contacts" color={focused ? COLORS.grey : COLORS.white} size={28} />
+                <Icon name="contacts" color={focused ? COLORS.grey : COLORS.white} size={23} />
                ),
                tabBarLabel:"Profile",
                tabBarLabelStyle:{color:COLORS.white, 
@@ -80,7 +80,7 @@ const BottomNavigator = ({route, navigation}) => {
                 headerTitle:"My Profile",
                 headerTitleAlign:'center',
                 headerTitleStyle:{fontSize:18, color:COLORS.grey},
-                headerTransparent:true
+               
               
            }}
            />

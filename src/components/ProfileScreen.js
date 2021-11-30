@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, StyleSheet, StatusBar, Image, useWindowDimensions, ActivityIndicator} from 'react-native'
+import { View, Text, StyleSheet, StatusBar, Image, useWindowDimensions, ActivityIndicator, TouchableOpacity, Alert} from 'react-native'
 import { TabView, SceneMap, TabBar} from 'react-native-tab-view'
 import Feather from 'react-native-vector-icons/Feather'
 import userImage from '../assets/user-male.png'
@@ -9,6 +9,9 @@ import ProfessionalDetails from './profileScreens/ProfessionalDetails'
 import AcademicDetails from './profileScreens/AcademicDetails'
 import PersonalDetails from './profileScreens/PersonalDetails'
 import { connect } from 'react-redux'
+import EditModal from '../reusable-components/EditModal'
+import { setInfo } from '../store/actions/actions'
+
 
 
 
@@ -18,15 +21,40 @@ const renderScene = SceneMap({
     third: ProfessionalDetails
 })
 
-const ProfileScreen = ({userDetails}) => {
+const ProfileScreen = ({userDetails, setInfo}) => {
 
     const [userInfo, setUserInfo] = useState([])
     const [fetching, setFetching] = useState(true)
+    const [visible, setVisible] = useState(false)
+    const [data, setData] = useState([])
+    const [refresh, setRefresh] = useState(false)
+
+    useEffect(() => {
+        handleUserInfo()
+      },[visible])
   
   useEffect(() => {
+      if(userDetails !== null && userDetails.length !== 0){
+        setFetching(false)
+      }
       setUserInfo([...(userDetails !== null ? userDetails : [])])
-      setFetching(false)
     }, [userDetails])
+
+
+    const handleEditIcon = (first, last) => {
+       setData([first, last])
+       setVisible(true)
+    }
+
+    const handleUserInfo = async () => {
+        setInfo( (data, status) => {
+      if(status){
+        console.log('sucess')
+      }
+        })
+      }
+
+
 
     const layout = useWindowDimensions();
 
@@ -51,15 +79,19 @@ const ProfileScreen = ({userDetails}) => {
 
     return (
         <View style={styles.container}>
+          <StatusBar backgroundColor={COLORS.secondary} barStyle='light-content' />
             {fetching ? <ActivityIndicator color={COLORS.primary} size="large" style={{flex:1, justifyContent:'center', alignItems:'center'}}/> 
         : <>
-            <StatusBar backgroundColor={COLORS.secondary} barStyle='light-content' />
             <View style={styles.headerView}>
                 <View style={styles.headerWrapper}>
-                <Image source={userInfo && userInfo[0].gender === "Female" ? userFemale : userImage} style={styles.userImage}/>
+                <Image source={userDetails && userDetails.length ? (userInfo[0].gender === "Female" ? userFemale : userImage) : null} style={styles.userImage}/>
                 <View style={styles.nameIcon}>
-                <Text style={{fontSize:18, fontWeight:'bold', marginRight:10}}>{userInfo && userInfo.length ? `${userInfo[0].FirstName} ${userInfo[0].lastName}` : null}</Text>
-                <Feather name="edit-2" color={COLORS.grey} size={20} />
+                <Text style={{fontSize:18, fontWeight:'bold', marginRight:10}}>{userDetails && userDetails.length ? `${userInfo[0].FirstName} ${userInfo[0].lastName}` : null}</Text>
+                <TouchableOpacity
+                onPress={() => handleEditIcon(userInfo[0].FirstName, userInfo[0].lastName)}
+                >
+                <Feather name="edit-2" color={COLORS.grey} size={18} />
+                </TouchableOpacity>
                 </View>
                 </View>
             </View>
@@ -73,6 +105,7 @@ const ProfileScreen = ({userDetails}) => {
                  renderTabBar={renderTabBar}
                 />
             </View>
+            <EditModal visible={visible} value={data} setVisible={setVisible} />
             </>
      }
         </View>
@@ -88,8 +121,9 @@ const styles = StyleSheet.create({
     headerView:{
         flex:2,
         backgroundColor:'#F4F9F9',
-        paddingHorizontal:20,
-        paddingVertical:40,
+        paddingHorizontal:10,
+        paddingTop:25,
+        paddingBottom:15
     },
     footerView:{
         flex:4,
@@ -102,7 +136,10 @@ const styles = StyleSheet.create({
         borderRadius:65
     },
     headerWrapper:{
+        flex:1,
         alignItems:'center',
+        justifyContent:'center',
+        
     },
     nameIcon:{
         flexDirection:'row',
@@ -112,6 +149,10 @@ const styles = StyleSheet.create({
     
 })
 
+const mapDispatchToProps = {
+    setInfo,
+  }
+
 const mapStateToProps = state => {
     const { userAuth } = state;
       return{
@@ -119,4 +160,4 @@ const mapStateToProps = state => {
       }
     }
   
-export default connect(mapStateToProps, null)(ProfileScreen)
+export default connect(mapStateToProps, mapDispatchToProps)(ProfileScreen)

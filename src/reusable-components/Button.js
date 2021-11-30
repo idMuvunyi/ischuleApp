@@ -29,7 +29,7 @@ const SecondaryButton = ({ title, onPress = () => { } }) => {
 const SuccessButton = ({ title, onPress = () => { } }) => {
     return (
         <TouchableOpacity activeOpacity={0.8} onPress={onPress}>
-            <View style={{ ...styles.btnPrimary, backgroundColor: COLORS.success, marginHorizontal: 5, }}>
+            <View style={{ ...styles.btnPrimary, backgroundColor: COLORS.success, marginHorizontal: 5, width:'100%' }}>
                 <Icon name="chevrons-right" color={COLORS.white} size={25} />
                 <Text style={styles.text}>{title}</Text>
             </View>

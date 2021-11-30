@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     card:{
         backgroundColor:COLORS.white,
         borderRadius:3,
-        elevation:0.5,
+        elevation:1,
         alignItems:'center',
         paddingVertical:25,
         margin:10

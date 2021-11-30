@@ -99,6 +99,42 @@ export const setInfo = (callback) => async dispatch => {
     }
 }
 
+export const updateUserNames = async (first, last, callback)  => {
+    try {
+        const uid = auth().currentUser.uid
+        const res = 
+        await firestore()
+        .collection('users')
+        .doc(uid)
+        .update({
+            FirstName: first,
+            lastName:last
+        })
+
+       callback(res, true)
+    } catch (error) {
+        callback(error.message, false)
+    }
+}
+
+export const updateUserInfoText = async (value, label, callback)  => {
+    try {
+        
+        const uid = auth().currentUser.uid
+        const res = 
+        await firestore()
+        .collection('users')
+        .doc(uid)
+        .update({
+            [label]: value
+        })
+
+       callback(res, true)
+    } catch (error) {
+        callback(error.message, false)
+    }
+}
+
 export const logout = (callback) => async dispatch => {
     try {
         await auth().signOut()
@@ -123,28 +159,3 @@ export const resetPassword = async (email, callback)  => {
 
 
 
-export const setFees = (callback) => async dispatch => {
-    
-    try {
-        let clinic_id = 17;
-        let encounter_id = 2665791;
-        
-        await fetch(`http://8754-49-204-132-22.ngrok.io/api/v1/checkout/encounters/${clinic_id}/${encounter_id}`)
-        .then(data => {
-            return data.json()
-        })
-        .then(fees => {
-
-            dispatch({
-                type: types.SET_FEES_INFO,
-                payload:{fees}
-            })
-
-            callback(fees, true)
-        })
- 
-
-    } catch (error) {
-        callback(error, false)
-    }
-}
