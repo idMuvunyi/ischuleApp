@@ -28,14 +28,13 @@ export default function EditModalText(props) {
             setShowModal(false)
         }
     }
-
+   
     // Update user Info
     const updateUserText = (val) => {
 
         let label = value[1]
-
         if(!text){
-            setError("About is required *")
+            setError("Input is required *")
             setValid(false)
             return
          }
@@ -66,7 +65,7 @@ export default function EditModalText(props) {
             <View style={styles.modalBg}>
                 <View style={[styles.modalContainer]}>
                 <View style={styles.modalHeader}>
-                        <Text style={{ fontSize: 18, color: COLORS.success }}>{`Edit ${value[1]}`}</Text>
+                        <Text style={{ fontSize: 18, color: COLORS.success }}>Edit Profile</Text>
                         <TouchableOpacity
                             activeOpacity={0.8}
                             onPress={() => setVisible(false)}
@@ -76,9 +75,10 @@ export default function EditModalText(props) {
                     </View>
                 <View style={{ marginVertical: 20 }}>
                         <TextInput
-                            style={styles.input}
+                            style={{...styles.input, height:value[1] === "about" ? 120 : 60 }}
                             defaultValue={value[0]}
                             //value={text}
+                            autoFocus={true}
                             placeholder="Type something!"
                             multiline={true}
                             numberOfLines={5}
@@ -88,7 +88,6 @@ export default function EditModalText(props) {
                                 setText(val)
                             }}
                             error={isValid}
-                           
                         />
                          {error ? (
                <View>
@@ -126,7 +125,6 @@ const styles = StyleSheet.create({
         elevation: 10
     },
     input: {
-        height: 120,
         justifyContent:'flex-start',
         textAlignVertical:'top',
         borderWidth: 0.5,

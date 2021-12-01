@@ -136,11 +136,12 @@ const styles = StyleSheet.create({
         elevation: 10
     },
     input: {
-        height: 40,
-        borderBottomWidth: 0.5,
+        textAlignVertical:'top',
+        borderWidth: 0.5,
         fontSize: 17,
+        marginTop:10,
         color: '#333',
-        marginTop: 15,
+        borderRadius:5
     },
     modalHeader:{
         flexDirection:'row',

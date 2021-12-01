@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react'
 import { Alert, StyleSheet, Text, TouchableOpacity, View, ScrollView, ActivityIndicator } from 'react-native'
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import { connect } from 'react-redux'
+import Feather from 'react-native-vector-icons/Feather'
 import COLORS from '../../assets/colors'
 import { tutors } from '../../rawData/tutors'
 
@@ -18,6 +19,11 @@ useEffect(() => {
   const addNewSubject = () => {
   alert('Item needs to be added')
    }
+
+   const handleEditIconNumber = (val, label) => {
+    alert(label)
+     }
+
 return(
   <ScrollView
       showsVerticalScrollIndicator={false}
@@ -45,17 +51,41 @@ return(
          <View style={{...styles.card, marginTop:20}} key={index}>
              <View style={styles.cardContent}>
                <Text style={{...styles.textContent,flex:2, fontWeight:'bold'}}>Monthly Salary Range</Text>
-               <Text style={{...styles.textContent, flex:1, textAlign:'right'}}>{`RWF ${item.salary}-${item.salaryTo}K`}</Text>
+               <View style={{...styles.textIconWrapper, flex:2}}>
+               <Text style={{...styles.textContent, flex:5, textAlign:'right'}}>{`RWF ${item.salary}-${item.salaryTo}K`}</Text>
+               <TouchableOpacity
+                onPress={() => handleEditIconNumber(item.salary, "salary")}
+                style={{flex:1, justifyContent:'center', alignItems:'center'}}
+                >
+                <Feather name="edit-2" color={COLORS.grey} size={18} />
+                </TouchableOpacity>
+               </View>
              </View>
 
              <View style={styles.cardContent}>
                <Text style={{...styles.textContent,flex:1, fontWeight:'bold'}}>Availability</Text>
-               <Text style={{...styles.textContent, flex:2, textAlign:'right'}}>{`${item.availability} | ${item.availableTime}`}</Text>
+               <View style={{...styles.textIconWrapper, flex:2}}>
+               <Text style={{...styles.textContent, flex:5, textAlign:'right'}}>{`${item.availability} | ${item.availableTime}`}</Text>
+               <TouchableOpacity
+                onPress={() => handleEditIconNumber(item.salary, "salary")}
+                style={{flex:1, justifyContent:'center', alignItems:'center'}}
+                >
+                <Feather name="edit-2" color={COLORS.grey} size={18} />
+                </TouchableOpacity>
+             </View>
              </View>
 
              <View style={{...styles.cardContent, borderBottomWidth:0}}>
                <Text style={{...styles.textContent,flex:1, fontWeight:'bold'}}>My Ratings</Text>
-               <Text style={{...styles.textContent, flex:2, textAlign:'right'}}>{Number(item.ratings).toFixed(1)}</Text>
+               <View style={{...styles.textIconWrapper, flex:2}}>
+               <Text style={{...styles.textContent, flex:5, textAlign:'right'}}>{Number(item.ratings).toFixed(1)}</Text>
+               <TouchableOpacity
+                onPress={() => handleEditIconNumber(item.salary, "salary")}
+                style={{flex:1, justifyContent:'center', alignItems:'center'}}
+                >
+                <Feather name="edit-2" color={COLORS.grey} size={18} />
+                </TouchableOpacity>
+             </View>
              </View>
              </View>
              )): 
@@ -106,6 +136,10 @@ const styles = StyleSheet.create({
          fontSize:14,
          color:COLORS.grey
        },
+       textIconWrapper:{
+        flexDirection:'row'
+      }
+
        
     });
 

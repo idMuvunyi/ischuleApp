@@ -6,6 +6,9 @@ import COLORS from '../assets/colors'
 import { updateUserInfoText } from '../store/actions/actions'
 import { SuccessButton } from './Button'
 import { districts } from '../rawData/districtAPI'
+import { education } from '../rawData/educationAPI'
+import { years } from '../rawData/yearAPI'
+
 
 
 export default function EditModalDropdown(props) {
@@ -36,7 +39,7 @@ export default function EditModalDropdown(props) {
 
         let label = value[1]
 
-        if(!selectedValue){
+        if(selectedValue === ""){
             setError("Input is required *")
             return
          }
@@ -68,7 +71,7 @@ export default function EditModalDropdown(props) {
             <View style={styles.modalBg}>
                 <View style={[styles.modalContainer]}>
                 <View style={styles.modalHeader}>
-                        <Text style={{ fontSize: 18, color: COLORS.success }}>{`Edit ${value[1]}`}</Text>
+                        <Text style={{ fontSize: 18, color: COLORS.success }}>Edit Profile</Text>
                         <TouchableOpacity
                             activeOpacity={0.8}
                             onPress={() => setVisible(false)}
@@ -82,7 +85,6 @@ export default function EditModalDropdown(props) {
                             selectedValue={selectedValue}
                             onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}  
                         >
-                            <Picker.Item label="" value="" />
                             {value && value[1] === 'gender' ? (
                                 genderList.map((item, index) => (
                             <Picker.Item label={item} value={item} key={index}/>
@@ -96,8 +98,21 @@ export default function EditModalDropdown(props) {
                                 ))
                             
                             ): null}
-                           
 
+                            {value && value[1] === 'edLevel' ? (
+                                education.map((item, index) => (
+                            <Picker.Item label={item} value={item} key={index}/>
+                                ))
+                            
+                            ): null}
+
+                            {value && value[1] === 'graduated' ? (
+                                years.map((item, index) => (
+                            <Picker.Item label={item} value={item} key={index}/>
+                                ))
+                            
+                            ): null}
+                           
                         </Picker>
 
                 {error ? (

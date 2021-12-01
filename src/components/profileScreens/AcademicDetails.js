@@ -2,17 +2,47 @@ import React, {useState, useEffect} from 'react'
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native'
 import COLORS from '../../assets/colors'
 import Feather from 'react-native-vector-icons/Feather'
+import { setInfo } from '../../store/actions/actions'
 import { connect } from 'react-redux'
+import EditModalDropdown from '../../reusable-components/EditModalDropdown'
+import EditModalText from '../../reusable-components/EditModalText'
 
-const AcademicDetails = ({userDetails}) => {
+
+const AcademicDetails = ({userDetails, setInfo}) => {
 
   const [userInfo, setUserInfo] = useState([])
   const [fetching, setFetching] = useState(true)
+  const [data, setData] = useState([])
+  const [showEdEdit, setShowEdEdit] = useState(false)
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    handleUserInfo()
+  },[visible, showEdEdit])
 
 useEffect(() => {
     setUserInfo([...(userDetails !== null ? userDetails : [])])
     setFetching(false)
   }, [userDetails])
+
+
+const handleEditIconDropdown = (val, label) => {
+  setData([val, label])
+  setShowEdEdit(true)
+} 
+
+const handleEditIconText = (val, label) => {
+  setData([val, label])
+  setVisible(true)
+}
+
+const handleUserInfo = async () => {
+  setInfo( (data, status) => {
+if(status){
+  console.log('sucess')
+}
+  })
+}
 
   return(
   <ScrollView
@@ -30,7 +60,7 @@ useEffect(() => {
                 <View style={{...styles.textIconWrapper, flex:2}}>
                 <Text style={{...styles.textContent, flex:6, textAlign:'right'}}>{item.edLevel}</Text>
                 <TouchableOpacity
-                onPress={() => handleEditIconDropdown(item.address, "address")}
+                onPress={() => handleEditIconDropdown(item.edLevel, "edLevel")}
                 style={{flex:1, justifyContent:'center', alignItems:'center'}}
                 >
                 <Feather name="edit-2" color={COLORS.grey} size={18} />
@@ -43,7 +73,7 @@ useEffect(() => {
                 <View style={{...styles.textIconWrapper, flex:2}}>
                 <Text style={{...styles.textContent, flex:6, textAlign:'right'}}>{item.studyField}</Text>
                 <TouchableOpacity
-                onPress={() => handleEditIconDropdown(item.address, "address")}
+                onPress={() => handleEditIconText(item.studyField, "studyField")}
                 style={{flex:1, justifyContent:'center', alignItems:'center'}}
                 >
                 <Feather name="edit-2" color={COLORS.grey} size={18} />
@@ -55,7 +85,7 @@ useEffect(() => {
                 <View style={{...styles.textIconWrapper, flex:2}}>
                 <Text style={{...styles.textContent, flex:6, textAlign:'right'}}>{item.institution}</Text>
                 <TouchableOpacity
-                onPress={() => handleEditIconDropdown(item.address, "address")}
+                onPress={() => handleEditIconText(item.institution, "institution")}
                 style={{flex:1, justifyContent:'center', alignItems:'center'}}
                 >
                 <Feather name="edit-2" color={COLORS.grey} size={18} />
@@ -67,13 +97,15 @@ useEffect(() => {
                 <View style={{...styles.textIconWrapper, flex:2}}>
                 <Text style={{...styles.textContent, flex:6, textAlign:'right'}}>{item.graduated}</Text>
                 <TouchableOpacity
-                onPress={() => handleEditIconDropdown(item.address, "address")}
+                onPress={() => handleEditIconDropdown(item.graduated, "graduated")}
                 style={{flex:1, justifyContent:'center', alignItems:'center'}}
                 >
                 <Feather name="edit-2" color={COLORS.grey} size={18} />
                 </TouchableOpacity>
               </View>
               </View>
+             <EditModalDropdown visible={showEdEdit} value={data} setVisible={setShowEdEdit} />
+             <EditModalText visible={visible} value={data} setVisible={setVisible} />
           </View>
              )):
              null
@@ -126,4 +158,8 @@ const mapStateToProps = state => {
     }
   }
 
-export default connect(mapStateToProps, null)(AcademicDetails)
+  const mapDispatchToProps = {
+    setInfo,
+  }
+
+export default connect(mapStateToProps, mapDispatchToProps)(AcademicDetails)

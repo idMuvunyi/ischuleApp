@@ -86,7 +86,7 @@ if(status){
                 <Text style={{ fontWeight: 'bold', fontSize: 17 }}>
                {items.name}
               </Text>
-              { items.name === 'Muvunyi Idrissa' ?
+              { items.name === 'Muvunyi Idrissa'?
               <View style={styles.tickBg}>
                 <Feather name="check" color={COLORS.white} size={14} />
              </View>
@@ -213,8 +213,8 @@ const styles = StyleSheet.create({
     },
     tickBg:{
       paddingVertical:2,
-      paddingHorizontal:2,
-      backgroundColor:'#B5CDA3',
+      paddingHorizontal:3,
+      backgroundColor:COLORS.secondary,
       borderRadius:12,
       marginLeft:5,
       alignItems:'center'
