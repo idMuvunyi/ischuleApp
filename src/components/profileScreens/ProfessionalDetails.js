@@ -5,24 +5,49 @@ import { connect } from 'react-redux'
 import Feather from 'react-native-vector-icons/Feather'
 import COLORS from '../../assets/colors'
 import { tutors } from '../../rawData/tutors'
+import EditModalNumber from '../../reusable-components/EditModalNumber'
+import EditModalAvailability from '../../reusable-components/EditModalAvailability'
 
 const ProfessionalDetails = ({userDetails}) => {
 
   const [userInfo, setUserInfo] = useState([])
   const [fetching, setFetching] = useState(true)
+  const [data, setData] = useState([])
+  const [visible, setVisible] = useState(false)
+  const [show, setShow] = useState(false)
+
 
 useEffect(() => {
     setUserInfo([...(userDetails !== null ? userDetails : [])])
     setFetching(false)
   }, [userDetails])
 
+  const handleRemoveSubject = (val) => {
+    Alert.alert("Remove a Course", 
+    `Are you sure you want to remove ${val} from your tutoring courses?`,
+    [
+      {
+        text: "Cancel",
+        style: "cancel"
+      },
+      { text: "Remove", 
+      onPress: () => console.log("OK Pressed") }
+    ])
+  }
+
   const addNewSubject = () => {
   alert('Item needs to be added')
    }
 
-   const handleEditIconNumber = (val, label) => {
-    alert(label)
+   const handleEditIconNumber = (val, label, valTo, labelTo) => {
+    setData([val, label, valTo, labelTo])
+    setVisible(true)
      }
+
+     const handleEditIconAvailability = (val, label, valTo, labelTo) => {
+      setData([val, label, valTo, labelTo])
+      setShow(true)
+       }
 
 return(
   <ScrollView
@@ -32,21 +57,32 @@ return(
     {fetching ? <ActivityIndicator color={COLORS.primary} size="large" style={{flex:1, justifyContent:'center', alignItems:'center'}}/> 
         : <>
         <View style={styles.subjectWrapper}>
-           {tutors[5].subjects.map((item, index) => (
-           <View style={styles.subjectsBg} key={index}>
-           <Text style={styles.subjectText}>{item}</Text>
-           </View>
-           ))}
+        {userDetails && userDetails.length ?   
+            userInfo.map((item) => (
+              item.courses.split(',').map((item, index) => (
+           <TouchableOpacity 
+            activeOpacity={0.6} 
+            key={index} 
+            onPress={() => handleRemoveSubject(item)} >
+             <View style={styles.subjectsBg}>
+             <Text>{item}</Text>
+              <AntDesign name="closecircleo" color={COLORS.success} size={16} style={{paddingLeft:5}}/>
+            </View>
+            </TouchableOpacity>
+              ))
+            
+           )):null}
            <TouchableOpacity
            onPress={() => addNewSubject()}
            >
            <View style={{...styles.subjectsBg, backgroundColor:COLORS.textColor, flexDirection:'row', alignItems:'center'}}>
                <AntDesign name="plus" color={COLORS.grey} size={15}/>
-               <Text style={{fontSize:14, color:COLORS.grey,paddingLeft:5}}>Add</Text>
+               <Text style={{fontSize:14, color:COLORS.grey,paddingLeft:5}}>New Course</Text>
             </View>
            </TouchableOpacity>
+             
          </View>
-         {userInfo && userInfo.length ?   
+         {userDetails && userDetails.length ?   
             userInfo.map((item, index) => (
          <View style={{...styles.card, marginTop:20}} key={index}>
              <View style={styles.cardContent}>
@@ -54,7 +90,7 @@ return(
                <View style={{...styles.textIconWrapper, flex:2}}>
                <Text style={{...styles.textContent, flex:5, textAlign:'right'}}>{`RWF ${item.salary}-${item.salaryTo}K`}</Text>
                <TouchableOpacity
-                onPress={() => handleEditIconNumber(item.salary, "salary")}
+                onPress={() => handleEditIconNumber(item.salary, "salary", item.salaryTo, "salaryTo")}
                 style={{flex:1, justifyContent:'center', alignItems:'center'}}
                 >
                 <Feather name="edit-2" color={COLORS.grey} size={18} />
@@ -67,7 +103,7 @@ return(
                <View style={{...styles.textIconWrapper, flex:2}}>
                <Text style={{...styles.textContent, flex:5, textAlign:'right'}}>{`${item.availability} | ${item.availableTime}`}</Text>
                <TouchableOpacity
-                onPress={() => handleEditIconNumber(item.salary, "salary")}
+                onPress={() => handleEditIconAvailability(item.availability, "availability", item.availableTime, "availableTime" )}
                 style={{flex:1, justifyContent:'center', alignItems:'center'}}
                 >
                 <Feather name="edit-2" color={COLORS.grey} size={18} />
@@ -79,14 +115,11 @@ return(
                <Text style={{...styles.textContent,flex:1, fontWeight:'bold'}}>My Ratings</Text>
                <View style={{...styles.textIconWrapper, flex:2}}>
                <Text style={{...styles.textContent, flex:5, textAlign:'right'}}>{Number(item.ratings).toFixed(1)}</Text>
-               <TouchableOpacity
-                onPress={() => handleEditIconNumber(item.salary, "salary")}
-                style={{flex:1, justifyContent:'center', alignItems:'center'}}
-                >
-                <Feather name="edit-2" color={COLORS.grey} size={18} />
-                </TouchableOpacity>
+               <View style={{flex:1}}></View>
              </View>
              </View>
+             <EditModalNumber visible={visible} value={data} setVisible={setVisible} />
+             <EditModalAvailability visible={show} value={data} setVisible={setShow} />
              </View>
              )): 
              null
@@ -115,7 +148,11 @@ const styles = StyleSheet.create({
         paddingHorizontal:30,
         borderRadius:20,
         margin:3,
+        flexDirection:'row', 
+        alignItems:'center',
+        justifyContent:'space-around'
       },
+    
     card:{
         backgroundColor:COLORS.white,
         borderRadius:3,

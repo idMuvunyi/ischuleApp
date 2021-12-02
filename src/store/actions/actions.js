@@ -117,6 +117,25 @@ export const updateUserNames = async (first, last, callback)  => {
     }
 }
 
+
+export const updateUserSalary = async (first, label, last, labelTo, callback)  => {
+    try {
+        const uid = auth().currentUser.uid
+        const res = 
+        await firestore()
+        .collection('users')
+        .doc(uid)
+        .update({
+            [label]: first,
+            [labelTo]: last
+        })
+
+       callback(res, true)
+    } catch (error) {
+        callback(error.message, false)
+    }
+}
+
 export const updateUserInfoText = async (value, label, callback)  => {
     try {
         

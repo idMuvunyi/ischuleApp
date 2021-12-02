@@ -2,17 +2,17 @@ import React, { useState, useEffect } from 'react'
 import { View, Text, Modal, StyleSheet, TextInput, TouchableOpacity, ToastAndroid, ActivityIndicator } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import COLORS from '../assets/colors'
-import { updateUserNames } from '../store/actions/actions'
+import { updateUserSalary } from '../store/actions/actions'
 import { SuccessButton } from './Button'
 
 
-export default function EditModal(props) {
+export default function EditModalNumber(props) {
 
     const{ visible, value, setVisible } = props
 
     const [showModal, setShowModal] = useState(visible)
-    const [editFirst, setEditFirst] = useState("")
-    const [editLast, setEditLast] = useState("")
+    const [editFirst, setEditFirst] = useState(0)
+    const [editLast, setEditLast] = useState(0)
     const [error, setError] = useState("")
     const [isValid, setValid] = useState(true)
     const [loading, setLoading] = useState(false)
@@ -32,25 +32,49 @@ export default function EditModal(props) {
 
     // Update user Info
     const updateUserInfo = (first, last) => {
+
+        let label = value[1]
+        let labelTo = value[3]
+
+        // format numbers to Ks
+        let minSalary = kFormatter(first)
+        let maxSalary = kFormatter(last)
+
         if(!editFirst){
-            setError("First name is required *")
+            setError("Value is required *")
             setValid(false)
             return
          }
          else if(!editLast){
-            setError("Last name is required *")
+            setError("Value is required *")
             setValid(false)
             return
          }
+         else if(first < 10000){
+            setError("At least 10000 for min salary *")
+            setValid(false)
+            return
+         }
+         else if(last > 300000){
+            setError("At least 300000 for max salary *")
+            setValid(false)
+            return
+         }
+         else if(first > last){
+            setError("Min salary can not exceed max *")
+            setValid(false)
+            return
+         }
+        
 
          setError("")
          setLoading(true)
 
-     updateUserNames(first, last, (res, status) => {
+     updateUserSalary(minSalary, label, maxSalary, labelTo, (res, status) => {
          if(status){
              setLoading(false)
-             setEditFirst("")
-             setEditLast("")
+             setEditFirst(0)
+             setEditLast(0)
              setVisible(false)
          }
          else{
@@ -59,6 +83,11 @@ export default function EditModal(props) {
      })
          
     }
+
+    const kFormatter = (num) => {
+        return Math.abs(num) > 999 ? Math.sign(num)*((Math.abs(num)/1000).toFixed(1)) : Math.sign(num)*Math.abs(num)
+    }
+
 
     return (
         <Modal
@@ -80,8 +109,11 @@ export default function EditModal(props) {
                 <View style={{ marginVertical: 20 }}>
                         <TextInput
                             style={styles.input}
-                            placeholder={value[0]}
-                            value={editFirst}
+                            placeholder="Min Salary"
+                            keyboardType="numeric"
+                            defaultValue={(value[0] * 1000).toFixed(0)}
+                            autoFocus={true}
+                            //value={editFirst}
                             onChangeText={text => {
                                 setError
                                 setEditFirst(text)
@@ -91,8 +123,10 @@ export default function EditModal(props) {
                         />
                         <TextInput
                             style={styles.input}
-                            placeholder={value[1]}
-                            value={editLast}
+                            placeholder="Max Salary"
+                            keyboardType="numeric"
+                            defaultValue={(value[2] * 1000).toFixed(0)}
+                            //value={editLast}
                             onChangeText={text => {
                                 setError
                                 setEditLast(text)

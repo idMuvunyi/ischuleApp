@@ -39,7 +39,7 @@ export default function EditModalDropdown(props) {
 
         let label = value[1]
 
-        if(selectedValue === ""){
+        if(!selectedValue){
             setError("Input is required *")
             return
          }

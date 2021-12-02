@@ -15,6 +15,7 @@ const AcademicDetails = ({userDetails, setInfo}) => {
   const [data, setData] = useState([])
   const [showEdEdit, setShowEdEdit] = useState(false)
   const [visible, setVisible] = useState(false)
+  const [ok, setOk] = useState(false)
 
   useEffect(() => {
     handleUserInfo()
@@ -39,7 +40,7 @@ const handleEditIconText = (val, label) => {
 const handleUserInfo = async () => {
   setInfo( (data, status) => {
 if(status){
-  console.log('sucess')
+  console.log('success')
 }
   })
 }
