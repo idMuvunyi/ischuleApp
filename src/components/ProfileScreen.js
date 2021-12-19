@@ -21,6 +21,8 @@ const renderScene = SceneMap({
     third: ProfessionalDetails
 })
 
+
+
 const ProfileScreen = ({userDetails, setInfo}) => {
 
     const [userInfo, setUserInfo] = useState([])
@@ -55,7 +57,6 @@ const ProfileScreen = ({userDetails, setInfo}) => {
       }
 
 
-
     const layout = useWindowDimensions();
 
     const [index, setIndex] = useState(0) 
@@ -64,6 +65,8 @@ const ProfileScreen = ({userDetails, setInfo}) => {
         {key: 'second', title:'Academic'},
         {key: 'third', title:'Profession'}
     ])
+
+  
 
     const renderTabBar = props => (
         <TabBar
@@ -97,6 +100,7 @@ const ProfileScreen = ({userDetails, setInfo}) => {
             </View>
             
             <View style={styles.footerView}>
+              {userInfo[0].userType === 'tutor' ? 
             <TabView 
                  navigationState={{index, routes}}
                  renderScene={renderScene}
@@ -104,6 +108,14 @@ const ProfileScreen = ({userDetails, setInfo}) => {
                  initialLayout={{width: layout.width}}
                  renderTabBar={renderTabBar}
                 />
+               :
+               <View>
+               <View style={styles.emplSeparator}>
+               </View>
+               <PersonalDetails />
+               </View>
+               
+              }
             </View>
             <EditModal visible={visible} value={data} setVisible={setVisible} />
             </>
@@ -146,6 +158,13 @@ const styles = StyleSheet.create({
         alignItems:'center',
         marginVertical:10
     },
+    emplSeparator:{
+        backgroundColor:COLORS.grey,
+        marginHorizontal:5,
+        height:15,
+        borderTopLeftRadius:20,
+        borderTopRightRadius:20,
+    }
     
 })
 

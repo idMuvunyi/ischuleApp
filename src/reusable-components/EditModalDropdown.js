@@ -8,6 +8,7 @@ import { SuccessButton } from './Button'
 import { districts } from '../rawData/districtAPI'
 import { education } from '../rawData/educationAPI'
 import { years } from '../rawData/yearAPI'
+import { courses } from '../rawData/coursesAPI'
 
 
 
@@ -17,7 +18,7 @@ export default function EditModalDropdown(props) {
 
     const [showModal, setShowModal] = useState(visible)
     const [error, setError] = useState("")
-    const [selectedValue, setSelectedValue] = useState(value[0])
+    const [selectedValue, setSelectedValue] = useState("")
     const [loading, setLoading] = useState(false)
     const genderList = ['Male', 'Female']
 
@@ -38,13 +39,12 @@ export default function EditModalDropdown(props) {
     const updateUserText = (val) => {
 
         let label = value[1]
-
+        
         if(!selectedValue){
-            setError("Input is required *")
+            setError("Input change is required *")
             return
          }
         
-
          setError("")
          setLoading(true)
 

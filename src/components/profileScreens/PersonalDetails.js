@@ -52,15 +52,25 @@ useEffect(() => {
          :
          <>
             <View style={styles.aboutContainer}>
-                <Text style={{fontSize:17, fontWeight:'bold'}}>About</Text>
+                <Text style={{fontSize:17, fontWeight:'bold'}}>{userInfo[0].userType === 'tutor' ? 'About Me': 'Phone Number'}</Text>
               <View style={styles.textIconWrapper}>
-                <Text style={{...styles.aboutText, flex:6}}>{userDetails && userDetails.length ? userInfo[0].about : null}</Text>
+                <Text style={{...styles.aboutText, flex:6}}>{userInfo[0].userType === 'tutor' ? userInfo[0].about: `[${userInfo[0].phone}] We don't share this number or any other details other than names with anyone without your consent.`}</Text>
+                {userInfo[0].userType === 'tutor' ?
                 <TouchableOpacity
                 onPress={() => handleEditIconText(userInfo[0].about, "about")}
                 style={{flex:1, justifyContent:'center', alignItems:'center'}}
                 >
                 <Feather name="edit-2" color={COLORS.grey} size={18} />
                 </TouchableOpacity>
+               :
+                <TouchableOpacity
+                onPress={() => handleEditIconText(userInfo[0].phone, "phone")}
+                style={{flex:1, justifyContent:'center', alignItems:'center'}}
+                >
+                <Feather name="edit-2" color={COLORS.grey} size={18} />
+                </TouchableOpacity>
+               }
+                
               </View>
             </View>
             {userDetails && userDetails.length ?   

@@ -1,20 +1,23 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, Modal, StyleSheet, TextInput, TouchableOpacity, ToastAndroid, ActivityIndicator } from 'react-native'
+import { View, Text, Modal, StyleSheet, TouchableOpacity, ToastAndroid, ActivityIndicator } from 'react-native'
+import { Picker } from '@react-native-picker/picker'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import COLORS from '../assets/colors'
 import { updateUserInfoText } from '../store/actions/actions'
 import { SuccessButton } from './Button'
+import { courses } from '../rawData/coursesAPI'
 
 
-export default function EditModalText(props) {
+
+export default function EditModalCourses(props) {
 
     const{ visible, value, setVisible } = props
 
     const [showModal, setShowModal] = useState(visible)
-    const [text, setText] = useState("")
     const [error, setError] = useState("")
-    const [isValid, setValid] = useState(true)
+    const [selectedValue, setSelectedValue] = useState()
     const [loading, setLoading] = useState(false)
+    
 
     useEffect(() => {
         toggleModal()
@@ -28,33 +31,48 @@ export default function EditModalText(props) {
             setShowModal(false)
         }
     }
-   
+
     // Update user Info
     const updateUserText = (val) => {
 
         let label = value[1]
-        if(!text){
-            setError("Input is required *")
-            setValid(false)
+        let updatedValues = `${value[0]}, ${val}`
+        let valArray = value[0].split(',')
+
+        console.log(valArray.length)
+
+        if(!val){
+            setError("Input change is required *")
             return
          }
-        
-
-         setError("")
-         setLoading(true)
-
-     updateUserInfoText(val, label, (res, status) => {
-         if(status){
-             setLoading(false)
-             setText("")
-             setVisible(false)
+         else if(valArray.length > 5){
+            setError("Only six courses can be choosen!")
+            return
+         }
+         else if(value[0].includes(val)){
+            setError("Course already chosen!")
+            return
          }
          else{
-            ToastAndroid.show(res, ToastAndroid.SHORT);
+             setError("")
+             setLoading(true)
+    
+         updateUserInfoText(updatedValues, label, (res, status) => {
+             if(status){
+                 setLoading(false)
+                 setSelectedValue("")
+                 setVisible(false)
+             }
+             else{
+                ToastAndroid.show(res, ToastAndroid.SHORT);
+             }
+         })
          }
-     })
+         
+        
          
     }
+
 
     return (
         <Modal
@@ -74,24 +92,23 @@ export default function EditModalText(props) {
                         </TouchableOpacity>
                     </View>
                 <View style={{ marginVertical: 20 }}>
-                        <TextInput
-                            style={{...styles.input, height:value[1] === "about" ? 120 : 60 }}
-                            defaultValue={value[0]}
-                            //value={text}
-                            autoFocus={true}
-                            maxLength={220}
-                            placeholder="Type something!"
-                            multiline={true}
-                            numberOfLines={5}
-                            scrollEnabled={true}
-                            keyboardType={value[1] === "phone" ? "phone-pad": "default"}
-                            onChangeText={val => {
-                                setError
-                                setText(val)
-                            }}
-                            error={isValid}
-                        />
-                         {error ? (
+                        <Picker
+                            style={styles.input}
+                            selectedValue={selectedValue}
+                            onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}  
+                        >
+                             {value && value[1] === 'courses' ? (
+                                courses
+                                .filter(course => !course.includes(value[0]))
+                                .map((item, index) => (
+                            <Picker.Item label={item} value={item} key={index}/>
+                                ))
+                            
+                            ): null}
+                           
+                        </Picker>
+
+                {error ? (
                <View>
                 <Text style={styles.errorTextStyle}>{error}</Text>
               </View>
@@ -101,7 +118,7 @@ export default function EditModalText(props) {
                     {loading ? <ActivityIndicator color={COLORS.success} size="large" style={{justifyContent:'center', alignItems:'center'}}/> : null}
                    
                     <View style={{ marginTop: 10 }}>
-                        <SuccessButton title="Save" onPress={() => updateUserText(text)} />
+                        <SuccessButton title="Save" onPress={() => updateUserText(selectedValue)} />
                     </View>
                 </View>
                 
@@ -127,6 +144,7 @@ const styles = StyleSheet.create({
         elevation: 10
     },
     input: {
+        height: 30,
         justifyContent:'flex-start',
         textAlignVertical:'top',
         borderWidth: 0.5,

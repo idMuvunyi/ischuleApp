@@ -33,6 +33,7 @@ export const register = async(email, password, firstName, lastName, userType, ca
                     lastName:lastName,
                     gender:'',
                     email:email,
+                    phone:'',
                     address:'',
                     edLevel:'Secondary School',
                     studyField:'',
@@ -99,6 +100,34 @@ export const setInfo = (callback) => async dispatch => {
     }
 }
 
+export const setTutors = (callback) => async dispatch => {
+    
+    try {
+        const uid = auth().currentUser.uid
+            const userDetails =
+                await firestore()
+                .collection('users')
+                .where('userType', '==', 'tutor')
+                .where('id', '!=', uid)
+                .get()
+                
+            let tutors = userDetails.data()
+            console.log(tutors)
+            dispatch({
+                type:types.SET_TUTOR,
+                payload:{ tutors }
+            }) 
+       callback(userDetails, true)
+
+    } catch (error) {
+        dispatch({
+            type:types.SET_USER,
+            payload:{}
+        })
+        callback(error.message, false)
+    }
+}
+
 export const updateUserNames = async (first, last, callback)  => {
     try {
         const uid = auth().currentUser.uid
@@ -153,6 +182,7 @@ export const updateUserInfoText = async (value, label, callback)  => {
         callback(error.message, false)
     }
 }
+
 
 export const logout = (callback) => async dispatch => {
     try {

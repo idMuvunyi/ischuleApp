@@ -35,6 +35,7 @@ export default function App() {
           headerTransparent:true,
           headerBackTitleVisible:false,
           headerBackVisible:true,
+          headerShadowVisible:false,
           headerTintColor:'#fff',
           headerTitleAlign:'center'
        })}

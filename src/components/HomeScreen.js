@@ -12,13 +12,13 @@ import HeaderTab from '../reusable-components/HeaderTab'
 import { tutors } from '../rawData/tutors'
 import auth,{firebase} from '@react-native-firebase/auth'
 import { connect } from 'react-redux'
-import { setInfo ,logout } from '../store/actions/actions'
+import { setInfo, setTutors, logout } from '../store/actions/actions'
 import DoubleTapToClose from '../reusable-components/ExistAppHandler'
 
 
 
 
-const HomeScreen = ({navigation, role, user, setInfo, logout}) => {
+const HomeScreen = ({navigation, role, user, setInfo, setTutors, logout}) => {
 
   const [userInfo, setUserInfo] = useState([])
   const [fetching, setFetching] = useState(true)
@@ -26,21 +26,36 @@ const HomeScreen = ({navigation, role, user, setInfo, logout}) => {
 // call this in bottomNavigator (parent)
 useEffect(() => {
     handleUserInfo()
+    //handleTutorInfo()
   },[])
+
 
 useEffect(() => {
     setUserInfo([...(user !== null ? user : [])])
   }, [user])
 
 
-
 const handleUserInfo = async () => {
+  // Set userAuth
   setInfo( (data, status) => {
 if(status){
   setFetching(false)
 }
   })
+
 }
+
+// const handleTutorInfo = async () => {
+// // Set all tutors
+// setTutors( (data, status) => {
+//   if(status){
+//    console.log(data)
+//   }
+//     })
+
+// }
+
+
 
   const goToPofile = () => {
     navigation.navigate('ProfileScreen')
@@ -235,6 +250,7 @@ const { userAuth } = state;
 const mapDispatchToProps = {
   logout,
   setInfo,
+  setTutors
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen)

@@ -1,7 +1,7 @@
 import * as types from '../types/types'
 const initialState = {
     userAuth:[],
-    feesList:[]
+    tutors:[]
 }
 
 export const authReducer = ( state = initialState, action) => {
@@ -12,9 +12,9 @@ export const authReducer = ( state = initialState, action) => {
                 ...state, userAuth:[action.payload.list]
             }
 
-            case types.SET_FEES_INFO:
+            case types.SET_TUTOR:
                 return {
-                    ...state, feesList:[action.payload.fees]
+                    ...state, feesList:[action.payload.list]
                 }
 
         default:

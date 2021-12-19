@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import { Alert, StyleSheet, Text, TouchableOpacity, View, ScrollView, ActivityIndicator } from 'react-native'
+import { Alert, StyleSheet, Text, TouchableOpacity, View, ScrollView, ActivityIndicator, ToastAndroid } from 'react-native'
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import { connect } from 'react-redux'
 import Feather from 'react-native-vector-icons/Feather'
@@ -7,14 +7,18 @@ import COLORS from '../../assets/colors'
 import { tutors } from '../../rawData/tutors'
 import EditModalNumber from '../../reusable-components/EditModalNumber'
 import EditModalAvailability from '../../reusable-components/EditModalAvailability'
+import EditModalCourses from '../../reusable-components/EditModalCourses'
+import { setInfo, updateUserInfoText } from '../../store/actions/actions'
 
-const ProfessionalDetails = ({userDetails}) => {
+const ProfessionalDetails = ({userDetails, setInfo}) => {
 
   const [userInfo, setUserInfo] = useState([])
   const [fetching, setFetching] = useState(true)
   const [data, setData] = useState([])
   const [visible, setVisible] = useState(false)
+  const [showCourseEdit, setShowCourseEdit] = useState(false)
   const [show, setShow] = useState(false)
+  const [refresh, setRefresh] = useState(false)
 
 
 useEffect(() => {
@@ -22,7 +26,19 @@ useEffect(() => {
     setFetching(false)
   }, [userDetails])
 
-  const handleRemoveSubject = (val) => {
+  useEffect(() => {
+    handleUserInfo()
+  },[visible, showCourseEdit, show, refresh])
+
+
+  const handleRemoveSubject = (val, list) => {
+    let listCourses = list.split(',')
+
+    if(listCourses.length === 1){
+      ToastAndroid.show("Courses can not be empty.", ToastAndroid.LONG);
+      return
+    }
+
     Alert.alert("Remove a Course", 
     `Are you sure you want to remove ${val} from your tutoring courses?`,
     [
@@ -31,12 +47,38 @@ useEffect(() => {
         style: "cancel"
       },
       { text: "Remove", 
-      onPress: () => console.log("OK Pressed") }
+      onPress: () => handleRemoveCourse(val, list) }
     ])
   }
 
-  const addNewSubject = () => {
-  alert('Item needs to be added')
+const handleRemoveCourse = (val, list) => {
+ let arrCourses = list.split(',')
+ let index  = arrCourses.indexOf(val)
+ let updatedCourseString = '';
+
+ if(index > -1){
+   arrCourses.splice(index, 1)
+   updatedCourseString = arrCourses.join(',')
+
+   updateUserInfoText(updatedCourseString, "courses", (res, status) => {
+    if(status){
+       setRefresh(true)
+      ToastAndroid.show("Course deleted successfully.", ToastAndroid.SHORT);
+    }
+    else{
+      ToastAndroid.show("Can not remove a course, Try again.", ToastAndroid.SHORT);
+    }
+   }
+    )
+ }
+ else{
+  ToastAndroid.show("Can not remove a course, Try again.", ToastAndroid.SHORT);
+ }
+}
+
+  const handleNewSubject = (data, label) => {
+    setData([data, label])
+    setShowCourseEdit(true)
    }
 
    const handleEditIconNumber = (val, label, valTo, labelTo) => {
@@ -48,6 +90,16 @@ useEffect(() => {
       setData([val, label, valTo, labelTo])
       setShow(true)
        }
+
+
+    const handleUserInfo = async () => {
+        setInfo( (data, status) => {
+      if(status){
+        console.log('success')
+      }
+        })
+      }
+
 
 return(
   <ScrollView
@@ -63,7 +115,7 @@ return(
            <TouchableOpacity 
             activeOpacity={0.6} 
             key={index} 
-            onPress={() => handleRemoveSubject(item)} >
+            onPress={() => handleRemoveSubject(item, userInfo[0].courses)} >
              <View style={styles.subjectsBg}>
              <Text>{item}</Text>
               <AntDesign name="closecircleo" color={COLORS.success} size={16} style={{paddingLeft:5}}/>
@@ -73,7 +125,7 @@ return(
             
            )):null}
            <TouchableOpacity
-           onPress={() => addNewSubject()}
+           onPress={() => handleNewSubject(userInfo[0].courses, "courses")}
            >
            <View style={{...styles.subjectsBg, backgroundColor:COLORS.textColor, flexDirection:'row', alignItems:'center'}}>
                <AntDesign name="plus" color={COLORS.grey} size={15}/>
@@ -120,6 +172,7 @@ return(
              </View>
              <EditModalNumber visible={visible} value={data} setVisible={setVisible} />
              <EditModalAvailability visible={show} value={data} setVisible={setShow} />
+             <EditModalCourses visible={showCourseEdit} value={data} setVisible={setShowCourseEdit} />
              </View>
              )): 
              null
@@ -186,5 +239,9 @@ const styles = StyleSheet.create({
           userDetails: userAuth
         }
       }
+
+      const mapDispatchToProps = {
+        setInfo,
+      }
     
-    export default connect(mapStateToProps, null)(ProfessionalDetails)
+    export default connect(mapStateToProps, mapDispatchToProps)(ProfessionalDetails)

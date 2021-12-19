@@ -10,7 +10,7 @@ import userMale from '../assets/avatar2.png'
 import COLORS from '../assets/colors';
 
 const MIN_HEIGHT = Platform.OS === 'ios' ? 90 : 55
-const MAX_HEIGHT = 150
+const MAX_HEIGHT = 170
 
 
 const TutorDetailsScreen = ({route, navigation}) => {
