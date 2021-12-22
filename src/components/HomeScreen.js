@@ -14,19 +14,22 @@ import auth,{firebase} from '@react-native-firebase/auth'
 import { connect } from 'react-redux'
 import { setInfo, setTutors, logout } from '../store/actions/actions'
 import DoubleTapToClose from '../reusable-components/ExistAppHandler'
+import { Colors } from 'react-native/Libraries/NewAppScreen'
 
 
 
 
-const HomeScreen = ({navigation, role, user, setInfo, setTutors, logout}) => {
+const HomeScreen = ({navigation, role, user, tutor, setInfo, setTutors, logout}) => {
 
   const [userInfo, setUserInfo] = useState([])
+  const [tutorInfo, setTutorInfo] = useState([])
+  const [searchField, setSearchField] = useState("")
   const [fetching, setFetching] = useState(true)
 
 // call this in bottomNavigator (parent)
 useEffect(() => {
     handleUserInfo()
-    //handleTutorInfo()
+    handleTutorInfo()
   },[])
 
 
@@ -34,6 +37,9 @@ useEffect(() => {
     setUserInfo([...(user !== null ? user : [])])
   }, [user])
 
+  useEffect(() => {
+    setTutorInfo([...(tutor !== null ? tutor : [])])
+  }, [tutor])
 
 const handleUserInfo = async () => {
   // Set userAuth
@@ -45,15 +51,16 @@ if(status){
 
 }
 
-// const handleTutorInfo = async () => {
-// // Set all tutors
-// setTutors( (data, status) => {
-//   if(status){
-//    console.log(data)
-//   }
-//     })
+const handleTutorInfo = async () => {
+// Set all tutors
+setTutors( (data, status) => {
+  if(status){
+    setFetching(false)
+  }
+  
+    })
 
-// }
+}
 
 
 
@@ -66,7 +73,7 @@ if(status){
 
   const getMeOut = async () => {
     logout(stats => {
-      if(stats === true){
+      if(stats){
         navigation.navigate('LoginScreen', {role:role})
       }else{
         Alert.alert('Sign Out', 'Can not sign out right now. Try again.')
@@ -81,13 +88,16 @@ if(status){
     const TutorSpace = ({items}) => {
         return(
           <TouchableOpacity 
-          onPress={() => navigation.navigate('TutorDetailsScreen', {title: items.name, details: items})}
+          onPress={() => {setSearchField(""),
+          navigation.navigate('TutorDetailsScreen', {title: `${items.FirstName} ${items.lastName}`, user: `${userInfo[0].FirstName} ${userInfo[0].lastName}`, userType:userInfo[0].userType, details: items})
+          
+        }}
           >
            <Animatable.View 
             animation="pulse" easing="ease-out"
             style={styles.cardItem}>
             <View style={{ elevation: 10 }}>
-              <Image source={items.gender === 'F' ? userFemale : userMale} 
+              <Image source={items.gender === 'Female' ? userFemale : userMale} 
               style={{width:60, height:60}} 
               />
             </View>
@@ -96,37 +106,35 @@ if(status){
               style={{
                 marginLeft: 10,
                 flex: 1,
-              }}>
-                <View style={styles.nameTick}>
+              }}> 
                 <Text style={{ fontWeight: 'bold', fontSize: 17 }}>
-               {items.name}
+               {`${items.FirstName} ${items.lastName}`}
               </Text>
-              { items.name === 'Muvunyi Idrissa'?
-              <View style={styles.tickBg}>
-                <Feather name="check" color={COLORS.white} size={14} />
-             </View>
-             :
-             null
-              }
-                </View>
-              
-              
+  
              <Text style={{fontSize: 14, color:COLORS.grey }}> 
-               {items.subjects.slice(0, 2).join(", ")}
+               {items.courses.split(",", 2)}
                  </Text>
               
               <Text style={{fontSize: 14, color:COLORS.secondary }}>
-               {items.location}
+               {items.address}
               </Text>
             </View>
             <View style={styles.salaryWrapper}>
               <Text style={{fontSize:13, color:COLORS.textColor, textAlign:'right'}}>RWF</Text>
-              <Text>{items.salary}</Text>
+              <Text>{`${items.salary}K - ${items.salaryTo}K ` }</Text>
             </View>
           </Animatable.View>
           </TouchableOpacity>
            
         )
+    }
+
+    const NoTutorsAvailable = () => {
+      return(
+        <View style={{alignItems:'center', color:COLORS.textColor}}>
+          <Text style={{fontSize:15}}>Opps! No tutor Available</Text>
+        </View>
+      )
     }
 
 
@@ -158,6 +166,8 @@ if(status){
             <View style={styles.searchWrapper}>
                 <TextInput 
                 placeholder="Find a tutor..."
+                value={searchField}
+                onChangeText={text => setSearchField(text)}
                 autoCapitalize="none"
                 style={styles.searchInput}
                 />
@@ -167,10 +177,15 @@ if(status){
             </View>
             <FlatList
             showsVerticalScrollIndicator={false}
-            data={tutors}
+            data={tutorInfo.filter(item => item.gender !== "")
+          .filter(item => (`${item.FirstName} ${item.lastName}`)
+          .toLowerCase().includes(searchField.toLowerCase())
+          )
+          }
             renderItem={
               (({item}) => <TutorSpace items={item} />)
             }
+            ListEmptyComponent={() => <NoTutorsAvailable />}
             keyExtractor={item => item.id}
             />
             </>
@@ -242,9 +257,10 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToProps = state => {
-const { userAuth } = state;
+const { userAuth, tutors } = state;
   return{
-    user: userAuth
+    user: userAuth,
+    tutor: tutors
   }
 }
 const mapDispatchToProps = {

@@ -14,7 +14,7 @@ export const authReducer = ( state = initialState, action) => {
 
             case types.SET_TUTOR:
                 return {
-                    ...state, feesList:[action.payload.list]
+                    ...state, tutors:[...action.payload.tutors]
                 }
 
         default:

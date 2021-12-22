@@ -103,25 +103,30 @@ export const setInfo = (callback) => async dispatch => {
 export const setTutors = (callback) => async dispatch => {
     
     try {
+        let tutors = []
         const uid = auth().currentUser.uid
-            const userDetails =
+
                 await firestore()
                 .collection('users')
                 .where('userType', '==', 'tutor')
                 .where('id', '!=', uid)
                 .get()
+                .then(querySnapshot => {
+                    querySnapshot.forEach(doc => {
+                        tutors.push(doc.data())
+                    })
+                })
                 
-            let tutors = userDetails.data()
-            console.log(tutors)
+            
             dispatch({
                 type:types.SET_TUTOR,
                 payload:{ tutors }
             }) 
-       callback(userDetails, true)
+       callback(tutors, true)
 
     } catch (error) {
         dispatch({
-            type:types.SET_USER,
+            type:types.SET_TUTOR,
             payload:{}
         })
         callback(error.message, false)
