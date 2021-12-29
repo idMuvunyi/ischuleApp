@@ -166,7 +166,7 @@ return(
              <View style={{...styles.cardContent, borderBottomWidth:0}}>
                <Text style={{...styles.textContent,flex:1, fontWeight:'bold'}}>My Ratings</Text>
                <View style={{...styles.textIconWrapper, flex:2}}>
-               <Text style={{...styles.textContent, flex:5, textAlign:'right'}}>{Number(item.ratings).toFixed(1)}</Text>
+               <Text style={{...styles.textContent, flex:5, textAlign:'right'}}>{(Number(item.ratings) + 2.5).toFixed(1)} / 5</Text>
                <View style={{flex:1}}></View>
              </View>
              </View>

@@ -23,7 +23,7 @@ const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(0)
                 <View style={styles.categoryBtnBg}>
                   <AntDesign name={category.image} color={COLORS.secondary} size={20}/>
                 </View>
-                <Text style={{fontSize:15, fontWeight:'bold', marginLeft:10}}>{category.name}</Text>
+                <Text style={{fontSize:15, fontWeight:'bold', marginLeft:10, color: selectedCategoryIndex === index ? COLORS.white : null}}>{category.name}</Text>
             </View>
         </TouchableOpacity>
         ))}

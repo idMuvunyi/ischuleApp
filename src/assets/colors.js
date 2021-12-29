@@ -1,10 +1,10 @@
 const COLORS = {
     white: '#FFF',
-    primary: '#2B7CD3',
-    secondary: '#80C3F3',
+    primary: '#2C5364',
+    secondary: '#00467F',
     grey: '#717171',
     textColor: '#DDEBF0',
-    success:'#22bb33'
+    success:'#ACBB78'
   }
   
   export default COLORS

@@ -1,52 +1,130 @@
-import React, { useState } from 'react'
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { View, Text, StyleSheet, TouchableOpacity, Linking, FlatList } from 'react-native'
 import { Modal, ModalContent, ModalButton, ModalFooter, SlideAnimation, ModalTitle } from 'react-native-modals';
+import auth from '@react-native-firebase/auth'
+import firestore from '@react-native-firebase/firestore'
 import COLORS from '../assets/colors'
-import { messages } from '../rawData/messages'
+import { connect } from 'react-redux';
 
 
-const MessagesScreen = () => {
+const MessagesScreen = ({userDetails}) => {
 
     const [visible, setVisible] = useState(false)
     const [modalData, setModalData] = useState([])
+    const [messageList, setMessageList] = useState([])
+    const [userInfo, setUserInfo] = useState([])
+
+
+    useEffect(() => {
+      setUserInfo([...(userDetails !== null ? userDetails : [])])
+    }, [userDetails])
+
+
+    useEffect(() => {
+     fetchMessages()
+    },[])
+
+
+    const fetchMessages = async () => {
+      try {
+         const uid = auth().currentUser.uid
+          let list = []
+          await firestore()
+              .collection('messages')
+              .get()
+              .then(querySnapshot => {
+                  //console.log(querySnapshot.size)
+                  querySnapshot.forEach(doc => {
+                    
+
+                      const { createdAt, receiverId, receiverName, seen, senderId, senderName, senderPhone, textMessage} = doc.data()
+                      if(senderId === uid || receiverId === uid){
+                      list.push({
+                          createdAt,
+                          receiverId,
+                          receiverName,
+                          seen,
+                          senderId,
+                          senderName,
+                          senderPhone,
+                          textMessage
+                      })
+                    }
+                     
+                  })
+              })
+
+          setMessageList([...list])
+          //loading stuff
+
+      } catch (error) {
+          console.log(error)
+      }
+  }
 
     const handleModalPress = (item) => {
+      if(userInfo[0].userType !== 'employer'){
         setVisible(true)
         setModalData(item)
+      }
     }
 
     const handleCallEmployer = () => {
-         Linking.openURL(`tel:${modalData.senderNumber}`)
+         Linking.openURL(`tel:${modalData.senderPhone}`)
          setVisible(false)
+         
     }
 
-    return (
-        <View style={styles.container}>
-            <ScrollView showsVerticalScrollIndicator={false}>
-                
-            {messages.map((item, index) => (
+    
+
+    const MessageComponent = ({item}) => {
+        return(
+           <>    
             <TouchableOpacity 
             activeOpacity={0.6}
             onPress={() => handleModalPress(item)}
-            key={index}
             >
             <View style={styles.msgWrapper}>
                 <View style={styles.namesDate}>
-                <Text style={{...styles.nameText, color:COLORS.primary, flex:1}}>{item.sender}</Text>
-                   <Text style={styles.dateText}>{item.time}</Text>
+                <Text style={{...styles.nameText, color:COLORS.primary, flex:1}}>{userInfo[0].userType === 'tutor' ? item.senderName: item.receiverName}</Text>
+                   <Text style={styles.dateText}>{item.createdAt}</Text>
                 </View>
                 <View>
-                    <Text style={styles.textMsg}>{item.text}</Text>
+                    <Text style={styles.textMsg}>{item.textMessage}</Text>
                 </View>
             </View>
             </TouchableOpacity>
-            ))}
-            </ScrollView>
+           </>
+        )
+    }
+
+    const NoMessageAvailable = () => {
+        return(
+          <View style={{alignItems:'center', color:COLORS.textColor, marginTop:50}}>
+            <Text style={{fontSize:15}}>No Message Available !</Text>
+          </View>
+        )
+      }
+
+
+
+
+    return (
+        <View style={styles.container}>
+            <FlatList 
+            showsVerticalScrollIndicator={false}
+               data={messageList}
+               renderItem={
+                   (({item}) => <MessageComponent item={item} />)
+               }
+               keyExtractor={item => item.id}
+               ListEmptyComponent={() => <NoMessageAvailable />}
+            />
 
             <Modal
     visible={visible}
     width={0.9}
-    modalTitle={<ModalTitle title={modalData.sender} />}
+    modalTitle={<ModalTitle title={modalData.senderName} />}
     onTouchOutside={() => setVisible(false)}
     modalAnimation={new SlideAnimation({
         slideFrom: 'right',
@@ -66,7 +144,7 @@ const MessagesScreen = () => {
   >
     <ModalContent>
         <View>
-            <Text style={{fontSize:15, lineHeight:22}}>{`You are about to call ${modalData.sender} for professional tutoring purpose.`}</Text>
+            <Text style={{fontSize:15, lineHeight:22}}>{`You are about to call employer ${modalData.senderName} for professional tutoring purpose.`}</Text>
         </View>
     </ModalContent>
   </Modal>
@@ -75,7 +153,7 @@ const MessagesScreen = () => {
     )
 }
 
-export default MessagesScreen
+
 
 const styles = StyleSheet.create({
     container:{
@@ -103,3 +181,12 @@ const styles = StyleSheet.create({
     }
 
 })
+
+const mapStateToProps = state => {
+  const { userAuth } = state;
+    return{
+      userDetails: userAuth
+    }
+  }
+
+export default connect(mapStateToProps, null)(MessagesScreen)

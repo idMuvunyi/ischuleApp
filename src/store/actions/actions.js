@@ -193,10 +193,6 @@ export const logout = (callback) => async dispatch => {
     try {
         await auth().signOut()
         callback(true)
-        dispatch({
-            type:types.SET_USER,
-            payload:{}
-        })
     } catch (error) {
         callback(false)
     }

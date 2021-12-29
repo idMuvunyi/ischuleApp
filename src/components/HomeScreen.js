@@ -89,7 +89,7 @@ setTutors( (data, status) => {
         return(
           <TouchableOpacity 
           onPress={() => {setSearchField(""),
-          navigation.navigate('TutorDetailsScreen', {title: `${items.FirstName} ${items.lastName}`, user: `${userInfo[0].FirstName} ${userInfo[0].lastName}`, userType:userInfo[0].userType, details: items})
+          navigation.navigate('TutorDetailsScreen', {title: `${items.FirstName} ${items.lastName}`, userId:userInfo[0].id, user: `${userInfo[0].FirstName} ${userInfo[0].lastName}`, userPhone:userInfo[0].phone, userType:userInfo[0].userType, details: items})
           
         }}
           >

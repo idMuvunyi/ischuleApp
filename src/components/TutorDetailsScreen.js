@@ -1,10 +1,11 @@
 import React from 'react'
 import { useEffect } from 'react';
-import { View, Text, Dimensions, Image, StyleSheet, Platform, StatusBar, TouchableOpacity } from 'react-native'
+import { View, Text, Dimensions, Image, StyleSheet, Platform, Alert, StatusBar, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { ImageHeaderScrollView, TriggeringView } from 'react-native-image-header-scroll-view';
 import { Modal, ModalContent, ModalButton, ModalFooter, SlideAnimation, ModalTitle } from 'react-native-modals';
 import StarRating from 'react-native-star-rating-widget';
 import Feather from 'react-native-vector-icons/Feather';
+import firestore from '@react-native-firebase/firestore'
 import { connect } from 'react-redux';
 import { useState } from 'react/cjs/react.development';
 import userFemale from '../assets/avatar1.png'
@@ -18,7 +19,9 @@ const MAX_HEIGHT = 170
 
 const TutorDetailsScreen = ({route, navigation, userDetails}) => {
 
-    const { gender, 
+    const {
+          id, 
+          gender, 
            FirstName,
            lastName, 
            address, 
@@ -37,19 +40,60 @@ const TutorDetailsScreen = ({route, navigation, userDetails}) => {
 
           } = route.params.details
      
-          const {user, userType} = route.params
+          const {userId, user, userPhone, userType} = route.params
 
      
     const [rating, setRating] = useState(0)
     const [visible, setVisible] = useState(false)
-
+    const [loading, setLoading] = useState(false)
+     
+    const message = `Hello ${lastName}, I just want to talk about tutoring service you offer. I left my contact, reach out to me for a conversation. Thank You`
 
     const handleModalPressed = () => {
       setVisible(true)
     }
 
+    const handleMessage = async () => {
+      
+      try {
+      setLoading(true)
+      let dates = new Date()
+
+      if(userPhone === ""){
+       Alert.alert('Missing Info','Add phone number on profile to continue')
+       setVisible(false)
+      }else{
+       await firestore()
+        .collection("messages")
+        .add({
+          senderId: userId,
+          senderPhone:userPhone,
+          senderName:user,
+          receiverId:id,
+          receiverName:`${FirstName} ${lastName}`,
+          textMessage:message,
+          createdAt:dates.toLocaleString(),
+          seen:false
+        })
+        setLoading(false)
+        setVisible(false)
+        Alert.alert('Message','Sent Successfully!')
+        
+
+      }
+        
+      } catch (error) {
+        setLoading(false)
+        Alert.alert('Message','Could not send message. Try again')
+      }
+      
+      
+
+    }
+
     const handleRating = (rate) => {
       setRating(rate)
+      //ToastAndroid.show(`you rated ${lastName}'s service ${rate}`, ToastAndroid.SHORT)
     }
 
     return (
@@ -102,7 +146,7 @@ const TutorDetailsScreen = ({route, navigation, userDetails}) => {
         <ModalFooter>
           <ModalButton
             text="Leave Contact"
-            onPress={() => {}}
+            onPress={() => handleMessage()}
           />
           <ModalButton
             text="Cancel"
@@ -113,8 +157,9 @@ const TutorDetailsScreen = ({route, navigation, userDetails}) => {
   >
     <ModalContent>
         <View>
-            <Text style={{fontSize:15, lineHeight:22, paddingTop:10}}>{`Hello I am ${user}, I just want to talk about tutoring service you offer. I left my contact, reach out to me for a conversation. Thank You`}</Text>
+            <Text style={{fontSize:15, lineHeight:22, paddingTop:10}}>{message}</Text>
         </View>
+        {loading ? <ActivityIndicator color={COLORS.success} size="large" style={{justifyContent:'center', alignItems:'center'}}/> : null}
     </ModalContent>
   </Modal>
 
@@ -186,7 +231,7 @@ const TutorDetailsScreen = ({route, navigation, userDetails}) => {
          
              <View style={styles.cardContent}>
                <Text style={{...styles.textContent,flex:1, fontWeight:'bold'}}>Overall Rating</Text>
-               <Text style={{...styles.textContent, flex:2, textAlign:'right'}}>{ratings} / 5</Text>
+               <Text style={{...styles.textContent, flex:2, textAlign:'right'}}>{(Number(ratings) + 2.5).toFixed(1)} / 5</Text>
              </View>
              <View style={styles.cardContent}>
                <Text style={{...styles.textContent,flex:1, fontWeight:'bold'}}>Availability</Text>

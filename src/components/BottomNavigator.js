@@ -43,7 +43,7 @@ const BottomNavigator = ({route, navigation}) => {
      children={() => <HomeScreen role={role} navigation={navigation}/>}
            options={{
                tabBarIcon:({focused}) => (
-                   <Icon name="home" color={focused ? COLORS.grey : COLORS.white} size={23} />
+                   <Icon name="home" color={focused ? COLORS.success : COLORS.white} size={23} />
                ),
                tabBarLabel:"Home",
                tabBarLabelStyle:{color:COLORS.white, 
@@ -55,22 +55,22 @@ const BottomNavigator = ({route, navigation}) => {
         <Tab.Screen name="MessagesScreen" component={MessagesScreen}
            options={{
                tabBarIcon:({focused}) => (
-                   <Icon name="message1" color={focused ? COLORS.grey : COLORS.white} size={23} />
+                   <Icon name="message1" color={focused ? COLORS.success : COLORS.white} size={23} />
                ),
                tabBarLabel:"Messages",
                tabBarLabelStyle:{color:COLORS.white, 
                 fontSize:13, fontSize:13, paddingBottom:Platform.OS === 'android' ? 8 : 0},
                headerShadowVisible:false,
                headerTitle:"Messages",
-               headerTitleAlign:'left',
-               headerTitleStyle:{fontSize:18, color:COLORS.grey}
+               headerTitleAlign:'center',
+               headerTitleStyle:{fontSize:18, color:COLORS.success}
            }}
            />
 
     <Tab.Screen name="ProfileScreen" component={ProfileScreen}
            options={{
                tabBarIcon:({focused}) => (
-                <Icon name="contacts" color={focused ? COLORS.grey : COLORS.white} size={23} />
+                <Icon name="contacts" color={focused ? COLORS.success : COLORS.white} size={23} />
                ),
                tabBarLabel:"Profile",
                tabBarLabelStyle:{color:COLORS.white, 
@@ -79,7 +79,7 @@ const BottomNavigator = ({route, navigation}) => {
                 headerShadowVisible:false,
                 headerTitle:"My Profile",
                 headerTitleAlign:'center',
-                headerTitleStyle:{fontSize:18, color:COLORS.grey},
+                headerTitleStyle:{fontSize:18, color:COLORS.success},
                
               
            }}

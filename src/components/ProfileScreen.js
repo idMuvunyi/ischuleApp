@@ -159,9 +159,9 @@ const styles = StyleSheet.create({
         marginVertical:10
     },
     emplSeparator:{
-        backgroundColor:COLORS.grey,
+        backgroundColor:COLORS.primary,
         marginHorizontal:5,
-        height:15,
+        height:10,
         borderTopLeftRadius:20,
         borderTopRightRadius:20,
     }
