@@ -5,6 +5,7 @@ import HomeScreen from './HomeScreen'
 import auth,{firebase} from '@react-native-firebase/auth'
 import COLORS from '../assets/colors'
 import Icon from 'react-native-vector-icons/AntDesign'
+import Icons from 'react-native-vector-icons/MaterialIcons'
 import MessagesScreen from './MessagesScreen'
 import ProfileScreen from './ProfileScreen'
 
@@ -13,7 +14,7 @@ const Tab = createBottomTabNavigator()
 
 
 const BottomNavigator = ({route, navigation}) => {
-    const { role } = route.params 
+    
 
     useEffect(() => {
         isTheUserAuthenticated()
@@ -22,7 +23,7 @@ const BottomNavigator = ({route, navigation}) => {
     const isTheUserAuthenticated = () => {
         firebase.auth().onAuthStateChanged((user) => {
             if(user === null){
-                navigation.navigate('LoginScreen', {role: 'employer'})
+                navigation.navigate('LoginScreen')
             }
         })
        
@@ -40,28 +41,30 @@ const BottomNavigator = ({route, navigation}) => {
        }}
        >
      <Tab.Screen name="HomeScreen" 
-     children={() => <HomeScreen role={role} navigation={navigation}/>}
+     children={() => <HomeScreen navigation={navigation}/>}
            options={{
                tabBarIcon:({focused}) => (
-                   <Icon name="home" color={focused ? COLORS.success : COLORS.white} size={23} />
+                   <Icon name="home" color={focused ? COLORS.focused : COLORS.white} size={23} />
                ),
                tabBarLabel:"Home",
                tabBarLabelStyle:{color:COLORS.white, 
-                fontSize:13, fontSize:13, paddingBottom:Platform.OS === 'android' ? 8 : 0},
+                fontSize:13, fontSize:13, paddingBottom:Platform.OS === 'android' ? 5 : 0},
                headerShown:false
            }}
            />
      
-        <Tab.Screen name="MessagesScreen" component={MessagesScreen}
+        <Tab.Screen
+        name='MessagesScreen'
+        children={() => <MessagesScreen navigation={navigation} />}
            options={{
-               tabBarIcon:({focused}) => (
-                   <Icon name="message1" color={focused ? COLORS.success : COLORS.white} size={23} />
+               tabBarIcon:({focused}) => (  
+                   <Icon name="message1" color={focused ? COLORS.focused : COLORS.white} size={23} />
                ),
-               tabBarLabel:"Messages",
+               tabBarLabel:"Interests",
                tabBarLabelStyle:{color:COLORS.white, 
-                fontSize:13, fontSize:13, paddingBottom:Platform.OS === 'android' ? 8 : 0},
+                fontSize:13, fontSize:13, paddingBottom:Platform.OS === 'android' ? 5 : 0},
                headerShadowVisible:false,
-               headerTitle:"Messages",
+               headerTitle:"Interests",
                headerTitleAlign:'center',
                headerTitleStyle:{fontSize:18, color:COLORS.success}
            }}
@@ -70,11 +73,11 @@ const BottomNavigator = ({route, navigation}) => {
     <Tab.Screen name="ProfileScreen" component={ProfileScreen}
            options={{
                tabBarIcon:({focused}) => (
-                <Icon name="contacts" color={focused ? COLORS.success : COLORS.white} size={23} />
+                <Icon name="contacts" color={focused ? COLORS.focused : COLORS.white} size={23} />
                ),
                tabBarLabel:"Profile",
                tabBarLabelStyle:{color:COLORS.white, 
-                fontSize:13, paddingBottom:Platform.OS === 'android' ? 8 : 0,
+                fontSize:13, paddingBottom:Platform.OS === 'android' ? 5 : 0,
             },
                 headerShadowVisible:false,
                 headerTitle:"My Profile",

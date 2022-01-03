@@ -17,8 +17,8 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import Feather from 'react-native-vector-icons/Feather'
 import COLORS from '../assets/colors'
 
-const LoginScreen = ({navigation, route, login}) => {
-    const{ role } = route.params
+const LoginScreen = ({navigation, login}) => {
+   
 
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
@@ -34,7 +34,7 @@ const LoginScreen = ({navigation, route, login}) => {
     }
 
     const handleSignUp = () => {
-     navigation.navigate('TutorSignUpScreen', {role: role})  
+     navigation.navigate('TutorSignUpScreen')  
     }
 
     const validateEmail = (email) => {
@@ -42,7 +42,7 @@ const LoginScreen = ({navigation, route, login}) => {
         return re.test(String(email).toLowerCase());
     }
 
-    const handleSignIn = () => {
+    const handleSignIn = async () => {
 
         // implement some validations
         const trimmedPass = password.trim()
@@ -64,13 +64,7 @@ const LoginScreen = ({navigation, route, login}) => {
           setError("")
           setFetching(true)
         
-      loginAsync()       
-    }
-
-
-
-    const loginAsync = async () => {
-        login(email, password, (res, stats) => {
+          login(email, password, (res, stats) => {
 
             if(stats === true){
             firebase.auth().onAuthStateChanged((user) => {
@@ -85,7 +79,7 @@ const LoginScreen = ({navigation, route, login}) => {
                         setFetching(false)
                         setEmail("")
                         setPassword("")
-                        navigation.navigate('BottomNavigator', {role: role})
+                        navigation.navigate('BottomNavigator')
                     }
                 }
             
@@ -95,14 +89,17 @@ const LoginScreen = ({navigation, route, login}) => {
                 setFetching(false)
                 Alert.alert('Sign In','Email address provided is not registered.') 
             }
+            
             else if(res.includes("auth/wrong-password")){
                 setFetching(false)
                 Alert.alert('Sign In','The password is invalid or the user does not have a password.') 
             }
 
             
-        }) 
+        })    
     }
+
+
 
    
     
@@ -113,7 +110,7 @@ const LoginScreen = ({navigation, route, login}) => {
     return (
         <View style={styles.containerStyle}>
            <DoubleTapToClose />
-            <StatusBar backgroundColor={COLORS.primary} barStyle='light-content' />
+            <StatusBar backgroundColor={COLORS.secondary} barStyle='light-content' />
             <View style={styles.header}>
                 <Text style={{fontSize:16}}>Welcome To, </Text>
                <Text style={styles.textHeader}>iShur App</Text>

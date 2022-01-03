@@ -1,6 +1,7 @@
 import * as types from '../types/types'
-import auth from '@react-native-firebase/auth'
+import auth, { firebase } from '@react-native-firebase/auth'
 import firestore from '@react-native-firebase/firestore'
+import { Alert } from 'react-native'
 
 export const register = async(email, password, firstName, lastName, userType, callBack) => {
 
@@ -191,10 +192,16 @@ export const updateUserInfoText = async (value, label, callback)  => {
 
 export const logout = (callback) => async dispatch => {
     try {
-        await auth().signOut()
-        callback(true)
+       firebase.auth().signOut()
+        .then(() => {
+            callback(true)
+        }).catch((err) => {
+            Alert.alert("E",err.message)
+        })
+        
     } catch (error) {
         callback(false)
+        console.log(err.message)
     }
 }
 

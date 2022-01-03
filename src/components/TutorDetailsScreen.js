@@ -118,7 +118,7 @@ const TutorDetailsScreen = ({route, navigation, userDetails}) => {
     <TriggeringView>
          <View style={styles.personalWrapper}>
            <View style={{flexDirection:'row', justifyContent:'space-between', marginBottom:5, alignItems:'center'}}>
-             <Text style={styles.title}>Personal Details</Text>
+             <Text style={styles.ptitle}>Personal Details</Text>
              {
                userType !== 'tutor' &&
                <TouchableOpacity 
@@ -126,7 +126,7 @@ const TutorDetailsScreen = ({route, navigation, userDetails}) => {
              onPress={() => handleModalPressed()}
              >
              <View style={styles.callBg}>
-                <Feather name="message-square" color={COLORS.grey} size={25} />
+                <Feather name="message-square" color={COLORS.secondary} size={25} />
              </View>
              </TouchableOpacity>
              }
@@ -279,8 +279,15 @@ const styles = StyleSheet.create({
     title: {
       fontSize: 18,
       color:COLORS.primary,
-      marginBottom:15
+      marginBottom:15,
+      textAlign:'center'
     },
+    ptitle: {
+      fontSize: 18,
+      color:COLORS.primary,
+      marginBottom:15,
+    },
+    
    profileImage:{
      width:80,
      height:80,

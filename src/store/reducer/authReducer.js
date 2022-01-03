@@ -16,7 +16,7 @@ export const authReducer = ( state = initialState, action) => {
                 return {
                     ...state, tutors:[...action.payload.tutors]
                 }
-
+           
         default:
             return state;
     }

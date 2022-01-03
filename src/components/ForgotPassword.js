@@ -61,7 +61,7 @@ const ForgotPassword = ({navigation, role}) => {
 
     return (
         <View style={styles.containerStyle}>
-            <StatusBar backgroundColor={COLORS.primary} barStyle='light-content' />
+            <StatusBar backgroundColor={COLORS.secondary} barStyle='light-content' />
             <View style={styles.header}>
                 <Text style={{fontSize:16}}>Welcome To, </Text>
                <Text style={styles.textHeader}>iSchule</Text>
@@ -112,7 +112,7 @@ const ForgotPassword = ({navigation, role}) => {
                     marginTop:15
                 }}
                   >
-                      <Text style={{...styles.textSign, color:COLORS.primary}}>Log In</Text>
+                      <Text style={{...styles.textSign, color:COLORS.primary}}>Sign In</Text>
                   </TouchableOpacity>
                </View>
             </Animatable.View>

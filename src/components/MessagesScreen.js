@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, Linking, FlatList } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Linking, FlatList, ActivityIndicator } from 'react-native'
 import { Modal, ModalContent, ModalButton, ModalFooter, SlideAnimation, ModalTitle } from 'react-native-modals';
 import auth from '@react-native-firebase/auth'
 import firestore from '@react-native-firebase/firestore'
@@ -13,6 +13,7 @@ const MessagesScreen = ({userDetails}) => {
     const [modalData, setModalData] = useState([])
     const [messageList, setMessageList] = useState([])
     const [userInfo, setUserInfo] = useState([])
+    const [loading, setLoading] = useState(false)
 
 
     useEffect(() => {
@@ -21,7 +22,9 @@ const MessagesScreen = ({userDetails}) => {
 
 
     useEffect(() => {
+      setLoading(true)
      fetchMessages()
+     return () => fetchMessages()
     },[])
 
 
@@ -55,7 +58,9 @@ const MessagesScreen = ({userDetails}) => {
               })
 
           setMessageList([...list])
-          //loading stuff
+
+            setLoading(false)
+          
 
       } catch (error) {
           console.log(error)
@@ -77,12 +82,13 @@ const MessagesScreen = ({userDetails}) => {
 
     
 
-    const MessageComponent = ({item}) => {
+    const MessageComponent = ({item, id}) => {
         return(
            <>    
             <TouchableOpacity 
             activeOpacity={0.6}
             onPress={() => handleModalPress(item)}
+            key={id}
             >
             <View style={styles.msgWrapper}>
                 <View style={styles.namesDate}>
@@ -108,18 +114,19 @@ const MessagesScreen = ({userDetails}) => {
 
 
 
-
     return (
         <View style={styles.container}>
+          {loading ? <ActivityIndicator color={COLORS.primary} size="large" style={{flex:1, justifyContent:'center', alignItems:'center'}}/>:
+           
             <FlatList 
             showsVerticalScrollIndicator={false}
                data={messageList}
                renderItem={
-                   (({item}) => <MessageComponent item={item} />)
+                   (({item, index}) => <MessageComponent item={item} id={index} />)
                }
-               keyExtractor={item => item.id}
                ListEmptyComponent={() => <NoMessageAvailable />}
             />
+              }
 
             <Modal
     visible={visible}

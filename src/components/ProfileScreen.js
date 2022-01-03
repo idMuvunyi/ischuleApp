@@ -33,6 +33,7 @@ const ProfileScreen = ({userDetails, setInfo}) => {
 
     useEffect(() => {
         handleUserInfo()
+        return () => handleUserInfo()
       },[visible])
   
   useEffect(() => {

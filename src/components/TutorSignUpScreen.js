@@ -8,11 +8,14 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import Feather from 'react-native-vector-icons/Feather'
 import COLORS from '../assets/colors'
 import { register } from '../store/actions/actions'
+import { Picker } from '@react-native-picker/picker'
 
-const TutorSignUpScreen = ({route, navigation}) => {
-   const {role} = route.params
+
+const TutorSignUpScreen = ({navigation}) => {
+   
     const [firstName, setFirstName] = useState("")
     const [lastName, setLastName] = useState("")
+    const [selectedValue, setSelectedValue] = useState("tutor")
     const [email, setEmail] = useState("")
     const [secureTextEntry, setTextSecureTextEntry] = useState(true)
     const [password, setPassword] = useState("")
@@ -43,6 +46,11 @@ const TutorSignUpScreen = ({route, navigation}) => {
             setValid(false)
             return
          }
+         else if(!selectedValue){
+            setError("User role is required *")
+            setValid(false)
+            return
+         }
          else if(!email){
             setError("Email required *")
             setValid(false)
@@ -60,7 +68,7 @@ const TutorSignUpScreen = ({route, navigation}) => {
           setError("")
           setFetching(true)
 
-        register(email, password, firstName, lastName, role, (res, stats) => {
+        register(email, password, firstName, lastName, selectedValue, (res, stats) => {
             
             if(stats){
                setFetching(false)
@@ -84,7 +92,7 @@ const TutorSignUpScreen = ({route, navigation}) => {
 
     return (
         <View style={styles.containerStyle}>
-            <StatusBar backgroundColor={COLORS.primary} barStyle='light-content' />
+            <StatusBar backgroundColor={COLORS.secondary} barStyle='light-content' />
             <View style={styles.header}>
                 <Text style={{fontSize:16}}>Create an account, </Text>
                <Text style={styles.textHeader}>iShur App</Text>
@@ -129,6 +137,22 @@ const TutorSignUpScreen = ({route, navigation}) => {
                 }}
                 error={isValid}
                />
+               </View>
+
+               <Text style={{...styles.text_footer, marginTop:35}}>Role</Text>
+               <View style={styles.inputWrapper}>
+               <Picker
+                style={styles.TextInput}
+                selectedValue={selectedValue}
+                onValueChange={(itemValue, itemIndex) => {
+                    setError
+                    setSelectedValue(itemValue)
+                }}  
+                error={isValid}
+                >
+                    <Picker.Item label="Tutor" value="tutor"/> 
+                    <Picker.Item label="Employer" value="employer"/> 
+                </Picker>
                </View>
 
                <Text style={{...styles.text_footer, marginTop:35}}>Email</Text>

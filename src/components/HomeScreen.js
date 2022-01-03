@@ -14,12 +14,12 @@ import auth,{firebase} from '@react-native-firebase/auth'
 import { connect } from 'react-redux'
 import { setInfo, setTutors, logout } from '../store/actions/actions'
 import DoubleTapToClose from '../reusable-components/ExistAppHandler'
-import { Colors } from 'react-native/Libraries/NewAppScreen'
 
 
 
 
-const HomeScreen = ({navigation, role, user, tutor, setInfo, setTutors, logout}) => {
+
+const HomeScreen = ({navigation, user, tutor, setInfo, setTutors, logout}) => {
 
   const [userInfo, setUserInfo] = useState([])
   const [tutorInfo, setTutorInfo] = useState([])
@@ -30,7 +30,12 @@ const HomeScreen = ({navigation, role, user, tutor, setInfo, setTutors, logout})
 useEffect(() => {
     handleUserInfo()
     handleTutorInfo()
+    return () => {
+      handleUserInfo()
+      handleTutorInfo()
+    }
   },[])
+
 
 
 useEffect(() => {
@@ -40,6 +45,7 @@ useEffect(() => {
   useEffect(() => {
     setTutorInfo([...(tutor !== null ? tutor : [])])
   }, [tutor])
+
 
 const handleUserInfo = async () => {
   // Set userAuth
@@ -68,18 +74,14 @@ setTutors( (data, status) => {
     navigation.navigate('ProfileScreen')
   }
   const handleSignOut = () => {
-    getMeOut()
-  }
-
-  const getMeOut = async () => {
     logout(stats => {
-      if(stats){
-        navigation.navigate('LoginScreen', {role:role})
-      }else{
+      if(!stats){
         Alert.alert('Sign Out', 'Can not sign out right now. Try again.')
       }
     })
   }
+
+  
 
   const shareApp = () => {
      Alert.alert('Share', 'coming soon.')  
@@ -107,7 +109,7 @@ setTutors( (data, status) => {
                 marginLeft: 10,
                 flex: 1,
               }}> 
-                <Text style={{ fontWeight: 'bold', fontSize: 17 }}>
+                <Text style={{ fontWeight: 'bold', fontSize: 15 }}>
                {`${items.FirstName} ${items.lastName}`}
               </Text>
   
@@ -144,7 +146,7 @@ setTutors( (data, status) => {
            <DoubleTapToClose />
         {fetching ? <ActivityIndicator color={COLORS.primary} size="large" style={{flex:1, justifyContent:'center', alignItems:'center'}}/> 
         : <>
-            <StatusBar backgroundColor={COLORS.primary} barStyle={Platform.OS === 'android' ? 'light-content': 'default' }/>
+            <StatusBar backgroundColor={COLORS.secondary} barStyle={Platform.OS === 'android' ? 'light-content': 'default' }/>
             <View style={styles.homeStyle}>
             <View style={styles.header}>
                 <View>
