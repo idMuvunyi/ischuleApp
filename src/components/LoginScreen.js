@@ -27,7 +27,7 @@ const LoginScreen = ({navigation, login}) => {
     const [error, setError] = useState("")
     const [isValid, setValid] = useState(true)
 
-    
+
 
     const ChangeSecureTextEntry = () => {
         setTextSecureTextEntry(!secureTextEntry)

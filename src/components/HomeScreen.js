@@ -1,6 +1,7 @@
 import React,{useState, useEffect} from 'react'
 import { View, Text, StyleSheet, StatusBar, Platform, SafeAreaView, TouchableOpacity, TextInput, FlatList, Image, Dimensions, Alert, ActivityIndicator } from 'react-native'
 import userImage from '../assets/user-male.png'
+import userImageF from '../assets/user-female.png'
 import userFemale from '../assets/avatar1.png'
 import userMale from '../assets/avatar2.png'
 import COLORS from '../assets/colors'
@@ -9,7 +10,6 @@ import * as Animatable from 'react-native-animatable'
 import OptionsMenu from 'react-native-option-menu'
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import HeaderTab from '../reusable-components/HeaderTab'
-import { tutors } from '../rawData/tutors'
 import auth,{firebase} from '@react-native-firebase/auth'
 import { connect } from 'react-redux'
 import { setInfo, setTutors, logout } from '../store/actions/actions'
@@ -26,15 +26,42 @@ const HomeScreen = ({navigation, user, tutor, setInfo, setTutors, logout}) => {
   const [searchField, setSearchField] = useState("")
   const [fetching, setFetching] = useState(true)
 
-// call this in bottomNavigator (parent)
-useEffect(() => {
-    handleUserInfo()
-    handleTutorInfo()
-    return () => {
+
+
+  useEffect(() => {
+      let isMounted = true
+      const handleUserInfo = async () => {
+        // Set userAuth
+        if(isMounted){
+          setInfo((data, status) => {
+            if(status){
+              setFetching(false)
+            }})
+        } 
+      }
       handleUserInfo()
+
+      return () => {
+        isMounted = false
+      }
+  }, [])
+
+  useEffect(() => {
+      let isMounted = true
+      const handleTutorInfo = async () => {
+        // Set all tutors
+        setTutors( (data, status) => {
+          if(status){
+            setFetching(false)
+          }})
+        }
+
       handleTutorInfo()
-    }
-  },[])
+
+      return () => {
+        isMounted = false
+      }
+  }, [])
 
 
 
@@ -47,32 +74,6 @@ useEffect(() => {
   }, [tutor])
 
 
-const handleUserInfo = async () => {
-  // Set userAuth
-  setInfo( (data, status) => {
-if(status){
-  setFetching(false)
-}
-  })
-
-}
-
-const handleTutorInfo = async () => {
-// Set all tutors
-setTutors( (data, status) => {
-  if(status){
-    setFetching(false)
-  }
-  
-    })
-
-}
-
-
-
-  const goToPofile = () => {
-    navigation.navigate('ProfileScreen')
-  }
   const handleSignOut = () => {
     logout(stats => {
       if(!stats){
@@ -151,12 +152,12 @@ setTutors( (data, status) => {
             <View style={styles.header}>
                 <View>
                    <Text style={styles.wlcmText}>Hello, </Text>
-                   <Text style={{fontSize:18, color:COLORS.secondary, fontWeight:'600'}}>{userInfo && userInfo.length ? userInfo[0].lastName : null}</Text>
+                   <Text style={{fontSize:18, color:COLORS.secondary, fontWeight:'600'}}>{user && user.length ? userInfo[0].lastName : null}</Text>
                 </View>
                 <TouchableOpacity>
                 <View>
                 <OptionsMenu
-                   button={user && user.length ? (userInfo[0].gender === "Female" ? userFemale : userImage): null}
+                   button={user && user.length ? (userInfo[0].gender === "Female" ? userImageF : userImage): null}
                     buttonStyle={{ height: 50, width: 50, borderRadius: 20 }}
                     //destructiveIndex={1} ios only
                     options={["Sign out","Share App" ]}

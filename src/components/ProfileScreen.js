@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, StatusBar, Image, useWindowDimensions, Activity
 import { TabView, SceneMap, TabBar} from 'react-native-tab-view'
 import Feather from 'react-native-vector-icons/Feather'
 import userImage from '../assets/user-male.png'
-import userFemale from '../assets/avatar1.png'
+import userFemale from '../assets/user-female.png'
 import COLORS from '../assets/colors'
 import ProfessionalDetails from './profileScreens/ProfessionalDetails'
 import AcademicDetails from './profileScreens/AcademicDetails'
@@ -21,8 +21,6 @@ const renderScene = SceneMap({
     third: ProfessionalDetails
 })
 
-
-
 const ProfileScreen = ({userDetails, setInfo}) => {
 
     const [userInfo, setUserInfo] = useState([])
@@ -32,8 +30,19 @@ const ProfileScreen = ({userDetails, setInfo}) => {
     const [refresh, setRefresh] = useState(false)
 
     useEffect(() => {
-        handleUserInfo()
-        return () => handleUserInfo()
+      let isMounted = true
+      const handleUserInfo = async () => {
+        if(isMounted){
+          setInfo( (data, status) => {
+            if(status){
+              console.log('sucess')
+            }
+              })
+        }}
+
+      handleUserInfo()
+
+      return () => isMounted = false
       },[visible])
   
   useEffect(() => {
@@ -49,13 +58,7 @@ const ProfileScreen = ({userDetails, setInfo}) => {
        setVisible(true)
     }
 
-    const handleUserInfo = async () => {
-        setInfo( (data, status) => {
-      if(status){
-        console.log('sucess')
-      }
-        })
-      }
+   
 
 
     const layout = useWindowDimensions();

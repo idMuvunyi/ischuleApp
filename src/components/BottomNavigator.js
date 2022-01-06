@@ -5,7 +5,6 @@ import HomeScreen from './HomeScreen'
 import auth,{firebase} from '@react-native-firebase/auth'
 import COLORS from '../assets/colors'
 import Icon from 'react-native-vector-icons/AntDesign'
-import Icons from 'react-native-vector-icons/MaterialIcons'
 import MessagesScreen from './MessagesScreen'
 import ProfileScreen from './ProfileScreen'
 
@@ -18,7 +17,7 @@ const BottomNavigator = ({route, navigation}) => {
 
     useEffect(() => {
         isTheUserAuthenticated()
-    },[navigation])
+    },[])
     
     const isTheUserAuthenticated = () => {
         firebase.auth().onAuthStateChanged((user) => {

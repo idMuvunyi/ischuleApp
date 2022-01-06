@@ -22,50 +22,56 @@ const MessagesScreen = ({userDetails}) => {
 
 
     useEffect(() => {
+      let isMounted = true
       setLoading(true)
+      const fetchMessages = async () => {
+        try {
+          if(isMounted){
+            const uid = auth().currentUser.uid
+            let list = []
+            await firestore()
+                .collection('messages')
+                .get()
+                .then(querySnapshot => {
+                    //console.log(querySnapshot.size)
+                    querySnapshot.forEach(doc => {
+                    
+                        const { createdAt, receiverId, receiverName, seen, senderId, senderName, senderPhone, textMessage} = doc.data()
+                        if(senderId === uid || receiverId === uid){
+                        list.push({
+                            createdAt,
+                            receiverId,
+                            receiverName,
+                            seen,
+                            senderId,
+                            senderName,
+                            senderPhone,
+                            textMessage
+                        })
+                      }
+                       
+                    })
+                })
+  
+            setMessageList([...list])
+  
+              setLoading(false)
+          }
+  
+        } catch (error) {
+            console.log(error)
+        }
+    }
      fetchMessages()
-     return () => fetchMessages()
+
+     return () => {
+       isMounted = false
+     }
+     
     },[])
 
 
-    const fetchMessages = async () => {
-      try {
-         const uid = auth().currentUser.uid
-          let list = []
-          await firestore()
-              .collection('messages')
-              .get()
-              .then(querySnapshot => {
-                  //console.log(querySnapshot.size)
-                  querySnapshot.forEach(doc => {
-                    
-
-                      const { createdAt, receiverId, receiverName, seen, senderId, senderName, senderPhone, textMessage} = doc.data()
-                      if(senderId === uid || receiverId === uid){
-                      list.push({
-                          createdAt,
-                          receiverId,
-                          receiverName,
-                          seen,
-                          senderId,
-                          senderName,
-                          senderPhone,
-                          textMessage
-                      })
-                    }
-                     
-                  })
-              })
-
-          setMessageList([...list])
-
-            setLoading(false)
-          
-
-      } catch (error) {
-          console.log(error)
-      }
-  }
+    
 
     const handleModalPress = (item) => {
       if(userInfo[0].userType !== 'employer'){
@@ -92,8 +98,8 @@ const MessagesScreen = ({userDetails}) => {
             >
             <View style={styles.msgWrapper}>
                 <View style={styles.namesDate}>
-                <Text style={{...styles.nameText, color:COLORS.primary, flex:1}}>{userInfo[0].userType === 'tutor' ? item.senderName: item.receiverName}</Text>
-                   <Text style={styles.dateText}>{item.createdAt}</Text>
+                  <Text style={{color:COLORS.primary, flex:1}}>{userInfo[0].userType === 'tutor' ? item.senderName.split(" ")[1]: item.receiverName.split(" ")[1]} :</Text>
+                   <Text style={{...styles.dateText, flex:1}}>{item.createdAt}</Text>
                 </View>
                 <View>
                     <Text style={styles.textMsg}>{item.textMessage}</Text>
@@ -177,7 +183,7 @@ const styles = StyleSheet.create({
       flexDirection:'row'
     },
     dateText:{
-        fontSize:14,
+        fontSize:12,
         color:COLORS.secondary,
     },
     textMsg:{
@@ -185,7 +191,7 @@ const styles = StyleSheet.create({
         fontSize:15,
         color:COLORS.grey,
         textAlign:'justify'
-    }
+    },
 
 })
 

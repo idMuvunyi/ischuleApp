@@ -192,12 +192,16 @@ export const updateUserInfoText = async (value, label, callback)  => {
 
 export const logout = (callback) => async dispatch => {
     try {
-       firebase.auth().signOut()
+       await firebase.auth().signOut()
         .then(() => {
             callback(true)
         }).catch((err) => {
             Alert.alert("E",err.message)
         })
+
+        // dispatch({
+        //     type:types.USER_LOGOUT,
+        //     })
         
     } catch (error) {
         callback(false)
