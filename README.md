@@ -1,3 +1,5 @@
+Mobile Application built for helping students in Rwanda to find skilled tutors in different academic subjects. Stack : React native, Firebase
+
 ![0](https://user-images.githubusercontent.com/54779592/148761968-69cf7b43-cd3d-42bc-a60b-c409e64c2a05.png)
 
 
