@@ -1,275 +1,311 @@
-import React,{useState, useEffect} from 'react'
-import { View, Text, StyleSheet, StatusBar, Platform, SafeAreaView, TouchableOpacity, TextInput, FlatList, Image, Dimensions, Alert, ActivityIndicator } from 'react-native'
-import userImage from '../assets/user-male.png'
-import userImageF from '../assets/user-female.png'
-import userFemale from '../assets/avatar1.png'
-import userMale from '../assets/avatar2.png'
-import COLORS from '../assets/colors'
+import React, {useState, useEffect} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  StatusBar,
+  Platform,
+  SafeAreaView,
+  TouchableOpacity,
+  TextInput,
+  FlatList,
+  Image,
+  Dimensions,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
+import userImage from '../assets/user-male.png';
+import userImageF from '../assets/user-female.png';
+import userFemale from '../assets/avatar1.png';
+import userMale from '../assets/avatar2.png';
+import COLORS from '../assets/colors';
 import Feather from 'react-native-vector-icons/Feather';
-import * as Animatable from 'react-native-animatable'
-import OptionsMenu from 'react-native-option-menu'
-import AntDesign from 'react-native-vector-icons/AntDesign'
-import HeaderTab from '../reusable-components/HeaderTab'
-import auth,{firebase} from '@react-native-firebase/auth'
-import { connect } from 'react-redux'
-import { setInfo, setTutors, logout } from '../store/actions/actions'
-import DoubleTapToClose from '../reusable-components/ExistAppHandler'
-
-
-
-
+import * as Animatable from 'react-native-animatable';
+import OptionsMenu from 'react-native-option-menu';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import HeaderTab from '../reusable-components/HeaderTab';
+import auth, {firebase} from '@react-native-firebase/auth';
+import {connect} from 'react-redux';
+import {setInfo, setTutors, logout} from '../store/actions/actions';
+import DoubleTapToClose from '../reusable-components/ExistAppHandler';
 
 const HomeScreen = ({navigation, user, tutor, setInfo, setTutors, logout}) => {
-
-  const [userInfo, setUserInfo] = useState([])
-  const [tutorInfo, setTutorInfo] = useState([])
-  const [searchField, setSearchField] = useState("")
-  const [fetching, setFetching] = useState(true)
-
-
+  const [userInfo, setUserInfo] = useState([]);
+  const [tutorInfo, setTutorInfo] = useState([]);
+  const [searchField, setSearchField] = useState('');
+  const [fetching, setFetching] = useState(true);
 
   useEffect(() => {
-      let isMounted = true
-      const handleUserInfo = async () => {
-        // Set userAuth
-        if(isMounted){
-          setInfo((data, status) => {
-            if(status){
-              setFetching(false)
-            }})
-        } 
+    let isMounted = true;
+    const handleUserInfo = async () => {
+      // Set userAuth
+      if (isMounted) {
+        setInfo((data, status) => {
+          if (status) {
+            setFetching(false);
+          }
+        });
       }
-      handleUserInfo()
+    };
+    handleUserInfo();
 
-      return () => {
-        isMounted = false
-      }
-  }, [])
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
-      let isMounted = true
-      const handleTutorInfo = async () => {
-        // Set all tutors
-        setTutors( (data, status) => {
-          if(status){
-            setFetching(false)
-          }})
+    let isMounted = true;
+    const handleTutorInfo = async () => {
+      // Set all tutors
+      setTutors((data, status) => {
+        if (status) {
+          setFetching(false);
         }
+      });
+    };
 
-      handleTutorInfo()
+    handleTutorInfo();
 
-      return () => {
-        isMounted = false
-      }
-  }, [])
-
-
-
-useEffect(() => {
-    setUserInfo([...(user !== null ? user : [])])
-  }, [user])
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
-    setTutorInfo([...(tutor !== null ? tutor : [])])
-  }, [tutor])
+    setUserInfo([...(user !== null ? user : [])]);
+  }, [user]);
 
+  useEffect(() => {
+    setTutorInfo([...(tutor !== null ? tutor : [])]);
+  }, [tutor]);
 
   const handleSignOut = () => {
     logout(stats => {
-      if(!stats){
-        Alert.alert('Sign Out', 'Can not sign out right now. Try again.')
+      if (!stats) {
+        Alert.alert('Sign Out', 'Can not sign out right now. Try again.');
       }
-    })
-  }
-
-  
+    });
+  };
 
   const shareApp = () => {
-     Alert.alert('Share', 'coming soon.')  
-  }
+    Alert.alert('Share', 'coming soon.');
+  };
 
-    const TutorSpace = ({items}) => {
-        return(
-          <TouchableOpacity 
-          onPress={() => {setSearchField(""),
-          navigation.navigate('TutorDetailsScreen', {title: `${items.FirstName} ${items.lastName}`, userId:userInfo[0].id, user: `${userInfo[0].FirstName} ${userInfo[0].lastName}`, userPhone:userInfo[0].phone, userType:userInfo[0].userType, details: items})
-          
-        }}
-          >
-           <Animatable.View 
-            animation="pulse" easing="ease-out"
-            style={styles.cardItem}>
-            <View style={{ elevation: 10 }}>
-              <Image source={items.gender === 'Female' ? userFemale : userMale} 
-              style={{width:60, height:60}} 
-              />
-            </View>
-    
-            <View
-              style={{
-                marginLeft: 10,
-                flex: 1,
-              }}> 
-                <Text style={{ fontWeight: 'bold', fontSize: 15 }}>
-               {`${items.FirstName} ${items.lastName}`}
-              </Text>
-  
-             <Text style={{fontSize: 14, color:COLORS.grey }}> 
-               {items.courses.split(",", 2)}
-                 </Text>
-              
-              <Text style={{fontSize: 14, color:COLORS.secondary }}>
-               {items.address}
-              </Text>
-            </View>
-            <View style={styles.salaryWrapper}>
-              <Text style={{fontSize:13, color:COLORS.textColor, textAlign:'right'}}>RWF</Text>
-              <Text>{`${items.salary}K - ${items.salaryTo}K ` }</Text>
-            </View>
-          </Animatable.View>
-          </TouchableOpacity>
-           
-        )
-    }
-
-    const NoTutorsAvailable = () => {
-      return(
-        <View style={{alignItems:'center', color:COLORS.textColor}}>
-          <Text style={{fontSize:15}}>Opps! No tutor Available</Text>
-        </View>
-      )
-    }
-
-
-     
+  const TutorSpace = ({items}) => {
     return (
-        <SafeAreaView style={styles.wrapper}>
-           <DoubleTapToClose />
-        {fetching ? <ActivityIndicator color={COLORS.primary} size="large" style={{flex:1, justifyContent:'center', alignItems:'center'}}/> 
-        : <>
-            <StatusBar backgroundColor={COLORS.secondary} barStyle={Platform.OS === 'android' ? 'light-content': 'default' }/>
-            <View style={styles.homeStyle}>
+      <TouchableOpacity
+        onPress={() => {
+          setSearchField(''),
+            navigation.navigate('TutorDetailsScreen', {
+              title: `${items.FirstName} ${items.lastName}`,
+              userId: userInfo[0].id,
+              user: `${userInfo[0].FirstName} ${userInfo[0].lastName}`,
+              userPhone: userInfo[0].phone,
+              userType: userInfo[0].userType,
+              details: items,
+            });
+        }}>
+        <Animatable.View
+          animation="pulse"
+          easing="ease-out"
+          style={styles.cardItem}>
+          <View style={{elevation: 10}}>
+            <Image
+              source={items.gender === 'Female' ? userFemale : userMale}
+              style={{width: 60, height: 60}}
+            />
+          </View>
+
+          <View
+            style={{
+              marginLeft: 10,
+              flex: 1,
+            }}>
+            <Text style={{fontWeight: 'bold', fontSize: 15}}>
+              {`${items.FirstName} ${items.lastName}`}
+            </Text>
+
+            <Text style={{fontSize: 14, color: COLORS.grey}}>
+              {items.courses.split(',', 2)}
+            </Text>
+
+            <Text style={{fontSize: 14, color: COLORS.secondary}}>
+              {items.address}
+            </Text>
+          </View>
+          <View style={styles.salaryWrapper}>
+            <Text
+              style={{
+                fontSize: 13,
+                color: COLORS.textColor,
+                textAlign: 'right',
+              }}>
+              RWF
+            </Text>
+            <Text>{`${items.salary}K - ${items.salaryTo}K `}</Text>
+          </View>
+        </Animatable.View>
+      </TouchableOpacity>
+    );
+  };
+
+  const NoTutorsAvailable = () => {
+    return (
+      <View style={{alignItems: 'center', color: COLORS.textColor}}>
+        <Text style={{fontSize: 15}}>Opps! No tutor Available</Text>
+      </View>
+    );
+  };
+
+  return (
+    <SafeAreaView style={styles.wrapper}>
+      <DoubleTapToClose />
+      {fetching ? (
+        <ActivityIndicator
+          color={COLORS.primary}
+          size="large"
+          style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
+        />
+      ) : (
+        <>
+          <StatusBar
+            backgroundColor={COLORS.secondary}
+            barStyle={Platform.OS === 'android' ? 'light-content' : 'default'}
+          />
+          <View style={styles.homeStyle}>
             <View style={styles.header}>
+              <View>
+                <Text style={styles.wlcmText}>Hello, </Text>
+                <Text
+                  style={{
+                    fontSize: 18,
+                    color: COLORS.secondary,
+                    fontWeight: '600',
+                  }}>
+                  {user && user.length ? userInfo[0].lastName : null}
+                </Text>
+              </View>
+              <TouchableOpacity>
                 <View>
-                   <Text style={styles.wlcmText}>Hello, </Text>
-                   <Text style={{fontSize:18, color:COLORS.secondary, fontWeight:'600'}}>{user && user.length ? userInfo[0].lastName : null}</Text>
-                </View>
-                <TouchableOpacity>
-                <View>
-                <OptionsMenu
-                   button={user && user.length ? (userInfo[0].gender === "Female" ? userImageF : userImage): null}
-                    buttonStyle={{ height: 50, width: 50, borderRadius: 20 }}
+                  <OptionsMenu
+                    button={
+                      user && user.length
+                        ? userInfo[0].gender === 'Female'
+                          ? userImageF
+                          : userImage
+                        : null
+                    }
+                    buttonStyle={{height: 50, width: 50, borderRadius: 20}}
                     //destructiveIndex={1} ios only
-                    options={["Sign out","Share App" ]}
-                    actions={[handleSignOut, shareApp,]}
+                    options={['Sign out', 'Share App']}
+                    actions={[handleSignOut, shareApp]}
                   />
                 </View>
-                </TouchableOpacity>
+              </TouchableOpacity>
             </View>
             <View style={styles.searchWrapper}>
-                <TextInput 
+              <TextInput
                 placeholder="Find a tutor..."
                 value={searchField}
                 onChangeText={text => setSearchField(text)}
                 autoCapitalize="none"
                 style={styles.searchInput}
-                />
-                <AntDesign name="search1" color={COLORS.textColor} size={28}  />
+              />
+              <AntDesign name="search1" color={COLORS.textColor} size={28} />
             </View>
             <HeaderTab />
-            </View>
-            <FlatList
+          </View>
+          <FlatList
             showsVerticalScrollIndicator={false}
-            data={tutorInfo.filter(item => item.gender !== "")
-          .filter(item => (`${item.FirstName} ${item.lastName}`)
-          .toLowerCase().includes(searchField.toLowerCase())
-          )
-          }
-            renderItem={
-              (({item}) => <TutorSpace items={item} />)
-            }
+            data={tutorInfo
+              .filter(item => item.gender !== '')
+              .filter(item =>
+                `${item.FirstName} ${item.lastName}`
+                  .toLowerCase()
+                  .includes(searchField.toLowerCase()),
+              )}
+            renderItem={({item}) => <TutorSpace items={item} />}
             ListEmptyComponent={() => <NoTutorsAvailable />}
             keyExtractor={item => item.id}
-            />
-            </>
-     }
-        </SafeAreaView>
-    )
-}
-
+          />
+        </>
+      )}
+    </SafeAreaView>
+  );
+};
 
 const styles = StyleSheet.create({
-    wrapper:{
-        flex:1,
-        backgroundColor:COLORS.white,
-        paddingHorizontal:15
-       
-    },
-    homeStyle:{
-        paddingTop:30,
-        marginBottom:5
-    },
-    header:{
-        flexDirection:'row',
-        justifyContent:'space-between'
-    },
-    wlcmText:{
-        fontSize:20
-    },
-    searchWrapper:{
-        flexDirection:'row',
-        marginTop:20,
-        borderColor:COLORS.secondary,
-        borderWidth:1,
-        paddingHorizontal:10,
-        paddingTop:10,
-        borderRadius:5,
-    },
-    searchInput:{
-       flex:1,
-       marginTop: Platform.OS === 'ios' ? 0 : -12,
-       fontSize:15,
-    },
-    cardItem: {
-            backgroundColor: COLORS.white,
-            borderRadius: 5,
-            elevation: 1,
-            alignItems: 'center',
-            flexDirection: 'row',
-            paddingVertical:15,
-            marginBottom:5,
-            borderRightWidth:3,
-            borderRightColor:COLORS.secondary
-          },
-    salaryWrapper:{
-      paddingRight:5
-    },
-    tickBg:{
-      paddingVertical:2,
-      paddingHorizontal:3,
-      backgroundColor:COLORS.secondary,
-      borderRadius:12,
-      marginLeft:5,
-      alignItems:'center'
-    },
-    nameTick:{
-      flexDirection:'row',
-      alignItems:'center'
-    }
-    
-})
+  wrapper: {
+    flex: 1,
+    backgroundColor: COLORS.white,
+    paddingHorizontal: 15,
+  },
+  homeStyle: {
+    paddingTop: 30,
+    marginBottom: 5,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  wlcmText: {
+    fontSize: 20,
+  },
+  searchWrapper: {
+    flexDirection: 'row',
+    marginTop: 20,
+    borderColor: COLORS.secondary,
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    paddingTop: 10,
+    borderRadius: 5,
+  },
+  searchInput: {
+    flex: 1,
+    marginTop: Platform.OS === 'ios' ? 0 : -12,
+    fontSize: 15,
+    color: '#000',
+  },
+  cardItem: {
+    backgroundColor: COLORS.white,
+    borderRadius: 5,
+    elevation: 1,
+    alignItems: 'center',
+    flexDirection: 'row',
+    paddingVertical: 15,
+    marginBottom: 5,
+    borderRightWidth: 3,
+    borderRightColor: COLORS.secondary,
+  },
+  salaryWrapper: {
+    paddingRight: 5,
+  },
+  tickBg: {
+    paddingVertical: 2,
+    paddingHorizontal: 3,
+    backgroundColor: COLORS.secondary,
+    borderRadius: 12,
+    marginLeft: 5,
+    alignItems: 'center',
+  },
+  nameTick: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+});
 
 const mapStateToProps = state => {
-const { userAuth, tutors } = state;
-  return{
+  const {userAuth, tutors} = state;
+  return {
     user: userAuth,
-    tutor: tutors
-  }
-}
+    tutor: tutors,
+  };
+};
 const mapDispatchToProps = {
   logout,
   setInfo,
-  setTutors
-}
+  setTutors,
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen)
+export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);

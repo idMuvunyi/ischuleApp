@@ -227,6 +227,7 @@ const styles = StyleSheet.create({
     marginTop: Platform.OS === 'ios' ? 0 : -12,
     paddingLeft: 10,
     fontSize: 15,
+    color: '#000',
   },
   button: {
     alignItems: 'center',
